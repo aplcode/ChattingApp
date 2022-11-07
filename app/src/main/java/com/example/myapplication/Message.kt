@@ -1,13 +1,3 @@
 package com.example.myapplication
 
-class Message {
-    var message: String? = null
-    var senderId: String? = null
-
-    constructor(){}
-
-    constructor(message: String, senderId: String?){
-        this.message = message
-        this.senderId = senderId
-    }
-}
+data class Message(val message: String? = null, val senderId: String? = null)

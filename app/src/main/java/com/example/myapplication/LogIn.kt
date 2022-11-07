@@ -1,21 +1,16 @@
 package com.example.myapplication
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class LogIn : AppCompatActivity() {
-
-    private lateinit var edtEmail : EditText
-    private lateinit var edtPassword : EditText
-    private lateinit var btnLogin :Button
-    private lateinit var btnSignUp : Button
-
-    private lateinit var mAuth: FirebaseAuth
+    private lateinit var btnLogin: Button
+    private lateinit var btnSignUp: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,36 +18,34 @@ class LogIn : AppCompatActivity() {
 
         supportActionBar?.hide()
 
-        mAuth = FirebaseAuth.getInstance()
-
-        edtEmail = findViewById(R.id.edt_email)
-        edtPassword = findViewById(R.id.edt_password)
         btnLogin = findViewById(R.id.btnLogin)
         btnSignUp = findViewById(R.id.btnSignUp)
 
-        btnSignUp.setOnClickListener{
-            val intent = Intent(this, SignUp::class.java)
-            startActivity(intent)
+        btnSignUp.setOnClickListener {
+            startActivity(Intent(this, SignUp::class.java))
         }
 
-        btnLogin.setOnClickListener{
-            val email = edtEmail.text.toString()
-            val password = edtPassword.text.toString()
+        btnLogin.setOnClickListener {
+            val email = findViewById<EditText>(R.id.edt_email).text.toString()
+            val passwd = findViewById<EditText>(R.id.edt_password).text.toString()
 
-            login(email, password);
+            if (email.isBlank() || passwd.isBlank()) {
+                Toast.makeText(this, "Email or password is blank", Toast.LENGTH_SHORT).show()
+            } else {
+                login(email, passwd)
+            }
         }
     }
 
-    private fun login(email: String, password: String){
-        mAuth.signInWithEmailAndPassword(email, password)
+    private fun login(email: String, password: String) =
+        FirebaseAuth.getInstance()
+            .signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val intent = Intent(this@LogIn, MainActivity::class.java)
                     finish()
-                    startActivity(intent)
+                    startActivity(Intent(this, MainActivity::class.java))
                 } else {
-                    Toast.makeText(this@LogIn, "User does not exist", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Email or password is wrong", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
 }
