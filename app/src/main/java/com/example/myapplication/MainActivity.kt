@@ -9,8 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_main.*
 
+//@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    var mainViewModel: MainViewModel = MainViewModel()
 
     private lateinit var userRecyclerView: RecyclerView
     private lateinit var userList: ArrayList<User>
@@ -21,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        send_message_btn.setOnClickListener {
+            mainViewModel.sendMessage("Hello")
+        }
 
         mAuth = FirebaseAuth.getInstance()
         mDbRef = FirebaseDatabase.getInstance().reference
@@ -63,3 +69,4 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 }
+
