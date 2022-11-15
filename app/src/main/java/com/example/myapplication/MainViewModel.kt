@@ -2,6 +2,9 @@ package com.example.myapplication
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.work.Logger
+import com.example.myapplication.dto.CustomerLogInInfoDto
+import com.example.myapplication.dto.ResponseDto
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.reactivex.Completable
@@ -13,22 +16,34 @@ import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import ua.naiksoftware.stomp.dto.StompMessage
 import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider.TAG
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.inject.Inject
+import java.util.concurrent.atomic.AtomicInteger
 
-class MainViewModel @Inject constructor(
-) : ViewModel() {
+class MainViewModel private constructor() : ViewModel() {
     companion object {
+        private val initFlag = AtomicBoolean()
+        val authFlag = AtomicInteger()
+        private val instance = MainViewModel()
         //указываем endpoint, на который регистрировали сокет, не забываем добавить /websocket
         const val SOCKET_URL = "ws://37.192.212.41:5000/api/v1/chat/websocket"
         const val CHAT_TOPIC = "/topic/chat"
         const val CHAT_LINK_SOCKET = "/api/v1/chat/sock"
+        const val LOGIN_LINK_SOCKET = "/api/v1/chat/login"
 
-        private val initFlag = AtomicBoolean()
+        private val logger = Logger.LogcatLogger(Log.DEBUG)
+
+
+        fun getInstance() = instance
+
     }
+
+
 
     /*
     	инициализируем Gson для сериализации/десериализации
@@ -42,15 +57,7 @@ class MainViewModel @Inject constructor(
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
 
-    init {
-        //инициализация WebSocket клиента
-        mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
-            .withServerHeartbeat(30000)
-        initFlag.set(false)
-        initChat() //инициализация подписок
-    }
-
-    private fun initChat() {
+    private fun initConnection() {
         if (initFlag.get()){
             return
         }
@@ -108,10 +115,37 @@ class MainViewModel @Inject constructor(
     отправляем сообщение в общий чат
     */
     fun sendMessage(text: String) {
-        initChat()
+        initConnection()
         val chatSocketMessage = ChatSocketMessage(text = text, author = "Me", datetime = LocalDateTime.now())
         sendCompletable(mStompClient!!.send(CHAT_LINK_SOCKET, gson.toJson(chatSocketMessage)))
 
+    }
+
+    fun login(email: String, password: String){
+        initConnection()
+        val credentials = CustomerLogInInfoDto(login = email, password = password)
+        val topicSubscribe = mStompClient!!.topic("$CHAT_TOPIC/2")
+            .subscribeOn(Schedulers.io(), false)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ topicMessage: StompMessage ->
+                Log.d(TAG, topicMessage.payload)
+                val message =
+                    gson.fromJson(topicMessage.payload, ResponseDto::class.java)
+                if (message.status == 0){
+                    authFlag.set(1)
+                } else {
+                    authFlag.set(-1)
+                }
+                logger.info("", Thread.currentThread().toString())
+            },
+                {
+                    Log.e(TAG, "Error!", it)
+                }
+            )
+        sendCompletable(mStompClient!!.send(LOGIN_LINK_SOCKET, gson.toJson(credentials)))
+        logger.info("",Thread.currentThread().toString())
+
+        sendPost(credentials)
     }
 
     private fun sendCompletable(request: Completable) {
@@ -146,10 +180,43 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun sendPost(credentials : CustomerLogInInfoDto){
+        val url = URL("http://37.192.212.41:5000$LOGIN_LINK_SOCKET")
+
+        with(url.openConnection() as HttpURLConnection) {
+            requestMethod = "POST"  // optional default is GET
+            doOutput = true
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+
+            try{
+                DataOutputStream(outputStream).use { it.writeChars(gson.toJson(credentials)) }
+            } catch (error: Exception){
+                println(error.message)
+            }
+
+            BufferedReader(InputStreamReader(inputStream)).use { br ->
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    println(line)
+                }
+            }
+
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
 
         mStompClient?.disconnect()
         compositeDisposable.dispose()
+    }
+
+    init {
+        mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
+            .withServerHeartbeat(30000)
+        initFlag.set(false)
+        initConnection()
+        authFlag.set(0)
     }
 }

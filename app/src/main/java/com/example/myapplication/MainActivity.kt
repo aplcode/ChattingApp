@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 //@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    var mainViewModel: MainViewModel = MainViewModel()
+    val mainViewModel: MainViewModel = MainViewModel.getInstance()
 
     private lateinit var userRecyclerView: RecyclerView
     private lateinit var userList: ArrayList<User>

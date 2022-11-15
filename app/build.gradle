@@ -34,14 +34,21 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeatures{
-       viewBinding true
+    buildFeatures {
+        viewBinding true
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
+
+
 
 def room_version = "2.4.2"
 
 dependencies {
+    implementation 'org.slf4j:slf4j-api:2.0.3'
+    implementation 'org.slf4j:slf4j-log4j12:2.0.3'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
@@ -89,8 +96,11 @@ dependencies {
     implementation('com.google.firebase:firebase-database-ktx:20.1.0')
     implementation platform('com.google.firebase:firebase-bom:31.0.3')
 
-
-
+    compileOnly('org.slf4j:slf4j-api:2.0.3')
+    compileOnly('uk.uuid.slf4j:slf4j-android:1.7.36-0')
+    implementation('org.apache.logging.log4j:log4j-api:2.19.0')
+    annotationProcessor('org.apache.logging.log4j:log4j-core:2.19.0')
+    implementation('org.apache.logging.log4j:log4j-slf4j-impl:2.19.0')
 }
 
 repositories {
