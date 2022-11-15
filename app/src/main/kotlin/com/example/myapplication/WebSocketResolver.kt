@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
@@ -24,149 +25,98 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 class WebSocketResolver private constructor() : ViewModel() {
-    companion object {
-        private val initFlag = AtomicBoolean()
-        val authFlag = AtomicInteger()
-        private val instance = WebSocketResolver()
-
-        const val SOCKET_URL = "ws://37.192.212.41:5000/api/v1/chat/websocket"
-        const val CHAT_TOPIC = "/topic/chat"
-        const val CHAT_LINK_SOCKET = "/api/v1/chat/sock"
-        const val LOGIN_LINK_SOCKET = "/api/v1/chat/login"
-        const val SIGNUP_LINK_SOCKET = "/api/v1/chat/signup"
-
-        private val logger = Logger.LogcatLogger(Log.DEBUG)
-
-        fun getInstance() = instance
-    }
-
-
-
-    /*
-    	инициализируем Gson для сериализации/десериализации
-    	и регистрируем дополнительный TypeAdapter для LocalDateTime
-    */
     private val gson: Gson = GsonBuilder().registerTypeAdapter(
         LocalDateTime::class.java,
         GsonLocalDateTimeAdapter()
     ).create()
-    private var mStompClient: StompClient? = null
+
+    private val mStompClient: StompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
+        .withServerHeartbeat(30000)
+
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     private fun initConnection() {
         if (initFlag.get()) {
             return
         }
+
         initFlag.set(true)
         resetSubscriptions()
-        if (mStompClient != null) {
-            val topicSubscribe = mStompClient!!.topic(CHAT_TOPIC)
-                .subscribeOn(Schedulers.io(), false)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ topicMessage: StompMessage ->
-                    Log.d(TAG, topicMessage.payload)
-                    val message: ChatSocketMessage =
-                        gson.fromJson(topicMessage.payload, ChatSocketMessage::class.java)
-                },
-                    {
-                        Log.e(TAG, "Error!", it)
-                    }
-                )
 
-            val lifecycleSubscribe = mStompClient!!.lifecycle()
-                .subscribeOn(Schedulers.io(), false)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { lifecycleEvent: LifecycleEvent ->
-                    when (lifecycleEvent.type!!) {
-                        LifecycleEvent.Type.OPENED -> Log.d(TAG, "Stomp connection opened")
-                        LifecycleEvent.Type.ERROR -> Log.e(TAG, "Error", lifecycleEvent.exception)
-                        LifecycleEvent.Type.FAILED_SERVER_HEARTBEAT,
-                        LifecycleEvent.Type.CLOSED -> {
-                            initFlag.set(false)
-                            Log.d(TAG, "Stomp connection closed")
-                        }
+        val lifecycleSubscribe = mStompClient.lifecycle()
+            .subscribeOn(Schedulers.io(), false)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                when (it.type!!) {
+                    LifecycleEvent.Type.OPENED -> Log.d(TAG, "Stomp connection opened")
+                    LifecycleEvent.Type.ERROR -> Log.e(TAG, "Error", it.exception)
+                    LifecycleEvent.Type.FAILED_SERVER_HEARTBEAT,
+                    LifecycleEvent.Type.CLOSED,
+                    -> {
+                        initFlag.set(false)
+                        Log.d(TAG, "Stomp connection closed")
                     }
                 }
-
-            compositeDisposable.add(lifecycleSubscribe)
-            compositeDisposable.add(topicSubscribe)
-
-            if (!mStompClient!!.isConnected) {
-                mStompClient!!.connect()
             }
 
+        compositeDisposable.add(lifecycleSubscribe)
 
-        } else {
-            Log.e(TAG, "mStompClient is null!")
+        if (!mStompClient.isConnected) {
+            mStompClient.connect()
         }
     }
 
     private fun resetSubscriptions() {
         compositeDisposable.dispose()
-
         compositeDisposable = CompositeDisposable()
     }
 
-    /*
-    отправляем сообщение в общий чат
-    */
     fun sendMessage(text: String) {
         initConnection()
         val chatSocketMessage = ChatSocketMessage(text = text, author = "Me", datetime = LocalDateTime.now())
-        sendCompletable(mStompClient!!.send(CHAT_LINK_SOCKET, gson.toJson(chatSocketMessage)))
-
+        sendCompletable(mStompClient.send(CHAT_LINK_SOCKET, gson.toJson(chatSocketMessage)))
     }
 
-    fun login(email: String, password: String){
+    fun login(email: String, password: String, success: Consumer<in StompMessage>, error: Consumer<in Throwable>) {
         initConnection()
         val credentials = CustomerLogInInfoDto(login = email, password = password)
-        val topicSubscribe = mStompClient!!.topic("/topic/login")
-            .subscribeOn(Schedulers.io(), false)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ topicMessage: StompMessage ->
-                Log.d(TAG, topicMessage.payload)
-                val message =
-                    gson.fromJson(topicMessage.payload, ResponseDto::class.java)
-                if (message.status == 0){
-                    authFlag.set(1)
-                } else {
-                    authFlag.set(-1)
-                }
-                logger.info("", Thread.currentThread().toString())
-            },
-                {
-                    Log.e(TAG, "Error!", it)
-                }
-            )
-        sendCompletable(mStompClient!!.send(LOGIN_LINK_SOCKET, gson.toJson(credentials)))
-        logger.info("",Thread.currentThread().toString())
+        topicListener("/topic/login", success, error)
 
+        webSocketSend(LOGIN_LINK_SOCKET, credentials)
     }
 
-    fun signup(firstname: String, lastname : String, email: String, password: String){
-        initConnection()
-        val credentials = CustomerSignUpInfoDto(firstname = firstname, lastname = lastname, emailAddress = email, password = password)
-        val topicSubscribe = mStompClient!!.topic("/topic/signup")
+    private fun webSocketSend(url: String, data: Any) =
+        sendCompletable(mStompClient.send(url, gson.toJson(data)))
+
+    private fun topicListenerResponseDto(topicName: String) =
+        topicListener(topicName, {
+            Log.d(TAG, it.payload)
+            val message = gson.fromJson(it.payload, ResponseDto::class.java)
+            if (message.status == 0) {
+                authFlag.set(1)
+            } else {
+                authFlag.set(-1)
+            }
+            logger.info("", Thread.currentThread().toString())
+        }, { Log.e(TAG, "Error!", it) })
+
+    private fun topicListener(topicName: String, onNext: Consumer<in StompMessage>, onError: Consumer<in Throwable>) {
+        val topicSubscribe = mStompClient.topic(topicName)
             .subscribeOn(Schedulers.io(), false)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ topicMessage: StompMessage ->
-                Log.d(TAG, topicMessage.payload)
-                val message =
-                    gson.fromJson(topicMessage.payload, ResponseDto::class.java)
-                if (message.status == 0){
-                    authFlag.set(1)
-                } else {
-                    authFlag.set(-1)
-                }
-                logger.info("", Thread.currentThread().toString())
-            },
-                {
-                    Log.e(TAG, "Error!", it)
-                }
-            )
-        sendCompletable(mStompClient!!.send(SIGNUP_LINK_SOCKET, gson.toJson(credentials)))
-        logger.info("",Thread.currentThread().toString())
+            .subscribe(onNext, onError)
 
+        compositeDisposable.add(topicSubscribe)
+    }
+
+    fun signup(firstname: String, lastname: String, email: String, password: String) {
+        initConnection()
+        val credentials =
+            CustomerSignUpInfoDto(firstname = firstname, lastname = lastname, emailAddress = email, password = password)
+        topicListenerResponseDto("/topic/signup")
+
+        webSocketSend(SIGNUP_LINK_SOCKET, credentials)
+        logger.info("", Thread.currentThread().toString())
     }
 
     private fun sendCompletable(request: Completable) {
@@ -174,46 +124,54 @@ class WebSocketResolver private constructor() : ViewModel() {
             request.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    {
-                        Log.d(TAG, "Stomp sended")
-                    },
-                    {
-                        Log.e(TAG, "Stomp error", it)
-                    }
+                    { Log.d(TAG, "Stomp sended") },
+                    { Log.e(TAG, "Stomp error", it) }
                 )
         )
     }
 
     @Suppress("unused")
-    fun sendGet() {
-        val url = URL("http://37.192.212.41:5000/actuator")
+    fun healthCheck() {
+        val url = URL("http://37.192.212.41:5000/actuator/health")
 
         with(url.openConnection() as HttpURLConnection) {
-            requestMethod = "GET"  // optional default is GET
-
             println("\nSent 'GET' request to URL : $url; Response Code : $responseCode")
-
             inputStream.bufferedReader().use {
-                it.lines().forEach { line ->
-                    println(line)
-                }
+                it.lines().forEach(System.out::println)
             }
         }
     }
 
-
     override fun onCleared() {
         super.onCleared()
 
-        mStompClient?.disconnect()
+        mStompClient.disconnect()
         compositeDisposable.dispose()
     }
 
     init {
-        mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
-            .withServerHeartbeat(30000)
         initFlag.set(false)
-        initConnection()
         authFlag.set(0)
+
+        initConnection()
+    }
+
+    companion object {
+        private val initFlag = AtomicBoolean()
+        private val authFlag = AtomicInteger()
+        private val instance = WebSocketResolver()
+
+        private const val URL = "ws://37.192.212.41:5000"
+        private const val PATH = "/api/v1/chat"
+        private const val SOCKET_URL = "$URL$PATH/websocket"
+        private const val CHAT_LINK_SOCKET = "$PATH/sock"
+        private const val LOGIN_LINK_SOCKET = "$PATH/login"
+        private const val SIGNUP_LINK_SOCKET = "$PATH/signup"
+
+        private val logger = Logger.LogcatLogger(Log.DEBUG)
+
+        fun getInstance() = instance
+
+        fun getAuthFlag() = authFlag
     }
 }

@@ -30,9 +30,11 @@ class SignUp : AppCompatActivity() {
     private fun signUp(name: String, surname : String, email: String, password: String) =
         Thread {
             mainViewModel.signup(name, surname, email, password)
-            while (WebSocketResolver.authFlag.get() == 0) {
+            while (WebSocketResolver.getAuthFlag().get() == 0) {
+                Thread.sleep(100)
             }
-            if (WebSocketResolver.authFlag.get() == 1) {
+
+            if (WebSocketResolver.getAuthFlag().get() == 1) {
                 val intent = Intent(this@SignUp, MainActivity::class.java)
                 finish()
                 startActivity(intent)
