@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.work.Logger
 import com.example.myapplication.dto.CustomerLogInInfoDto
+import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.dto.ResponseDto
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -16,9 +17,6 @@ import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import ua.naiksoftware.stomp.dto.StompMessage
 import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider.TAG
-import java.io.BufferedReader
-import java.io.DataOutputStream
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
@@ -35,6 +33,7 @@ class MainViewModel private constructor() : ViewModel() {
         const val CHAT_TOPIC = "/topic/chat"
         const val CHAT_LINK_SOCKET = "/api/v1/chat/sock"
         const val LOGIN_LINK_SOCKET = "/api/v1/chat/login"
+        const val SIGNUP_LINK_SOCKET = "/api/v1/chat/signup"
 
         private val logger = Logger.LogcatLogger(Log.DEBUG)
 
@@ -124,7 +123,7 @@ class MainViewModel private constructor() : ViewModel() {
     fun login(email: String, password: String){
         initConnection()
         val credentials = CustomerLogInInfoDto(login = email, password = password)
-        val topicSubscribe = mStompClient!!.topic("$CHAT_TOPIC/2")
+        val topicSubscribe = mStompClient!!.topic("/topic/login")
             .subscribeOn(Schedulers.io(), false)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ topicMessage: StompMessage ->
@@ -145,7 +144,32 @@ class MainViewModel private constructor() : ViewModel() {
         sendCompletable(mStompClient!!.send(LOGIN_LINK_SOCKET, gson.toJson(credentials)))
         logger.info("",Thread.currentThread().toString())
 
-        sendPost(credentials)
+    }
+
+    fun signup(firstname: String, lastname : String, email: String, password: String){
+        initConnection()
+        val credentials = CustomerSignUpInfoDto(firstname = firstname, lastname = lastname, emailAddress = email, password = password)
+        val topicSubscribe = mStompClient!!.topic("/topic/signup")
+            .subscribeOn(Schedulers.io(), false)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ topicMessage: StompMessage ->
+                Log.d(TAG, topicMessage.payload)
+                val message =
+                    gson.fromJson(topicMessage.payload, ResponseDto::class.java)
+                if (message.status == 0){
+                    authFlag.set(1)
+                } else {
+                    authFlag.set(-1)
+                }
+                logger.info("", Thread.currentThread().toString())
+            },
+                {
+                    Log.e(TAG, "Error!", it)
+                }
+            )
+        sendCompletable(mStompClient!!.send(SIGNUP_LINK_SOCKET, gson.toJson(credentials)))
+        logger.info("",Thread.currentThread().toString())
+
     }
 
     private fun sendCompletable(request: Completable) {
@@ -180,30 +204,6 @@ class MainViewModel private constructor() : ViewModel() {
         }
     }
 
-    fun sendPost(credentials : CustomerLogInInfoDto){
-        val url = URL("http://37.192.212.41:5000$LOGIN_LINK_SOCKET")
-
-        with(url.openConnection() as HttpURLConnection) {
-            requestMethod = "POST"  // optional default is GET
-            doOutput = true
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-
-            try{
-                DataOutputStream(outputStream).use { it.writeChars(gson.toJson(credentials)) }
-            } catch (error: Exception){
-                println(error.message)
-            }
-
-            BufferedReader(InputStreamReader(inputStream)).use { br ->
-                var line: String?
-                while (br.readLine().also { line = it } != null) {
-                    println(line)
-                }
-            }
-
-        }
-    }
 
     override fun onCleared() {
         super.onCleared()
