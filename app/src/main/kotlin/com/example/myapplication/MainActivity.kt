@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 //@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    val mainViewModel: MainViewModel = MainViewModel.getInstance()
+    val mainViewModel: WebSocketResolver = WebSocketResolver.getInstance()
 
     private lateinit var userRecyclerView: RecyclerView
     private lateinit var userList: ArrayList<User>

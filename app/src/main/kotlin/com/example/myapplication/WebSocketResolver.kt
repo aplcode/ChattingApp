@@ -23,12 +23,12 @@ import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
-class MainViewModel private constructor() : ViewModel() {
+class WebSocketResolver private constructor() : ViewModel() {
     companion object {
         private val initFlag = AtomicBoolean()
         val authFlag = AtomicInteger()
-        private val instance = MainViewModel()
-        //указываем endpoint, на который регистрировали сокет, не забываем добавить /websocket
+        private val instance = WebSocketResolver()
+
         const val SOCKET_URL = "ws://37.192.212.41:5000/api/v1/chat/websocket"
         const val CHAT_TOPIC = "/topic/chat"
         const val CHAT_LINK_SOCKET = "/api/v1/chat/sock"
@@ -37,9 +37,7 @@ class MainViewModel private constructor() : ViewModel() {
 
         private val logger = Logger.LogcatLogger(Log.DEBUG)
 
-
         fun getInstance() = instance
-
     }
 
 
@@ -55,9 +53,8 @@ class MainViewModel private constructor() : ViewModel() {
     private var mStompClient: StompClient? = null
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-
     private fun initConnection() {
-        if (initFlag.get()){
+        if (initFlag.get()) {
             return
         }
         initFlag.set(true)

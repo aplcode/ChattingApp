@@ -18,7 +18,7 @@ class LogIn : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
 
-    private val mainViewModel: MainViewModel = MainViewModel.getInstance()
+    private val mainViewModel: WebSocketResolver = WebSocketResolver.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log_in)
@@ -48,9 +48,9 @@ class LogIn : AppCompatActivity() {
     private fun login(email: String, password: String) {
         Thread {
             mainViewModel.login(email, password)
-            while (MainViewModel.authFlag.get() == 0) {
+            while (WebSocketResolver.authFlag.get() == 0) {
             }
-            if (MainViewModel.authFlag.get() == 1) {
+            if (WebSocketResolver.authFlag.get() == 1) {
                 val intent = Intent(this@LogIn, MainActivity::class.java)
                 finish()
                 startActivity(intent)

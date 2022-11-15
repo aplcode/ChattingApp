@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SignUp : AppCompatActivity() {
 
-    private val mainViewModel: MainViewModel = MainViewModel.getInstance()
+    private val mainViewModel = WebSocketResolver.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -30,9 +30,9 @@ class SignUp : AppCompatActivity() {
     private fun signUp(name: String, surname : String, email: String, password: String) =
         Thread {
             mainViewModel.signup(name, surname, email, password)
-            while (MainViewModel.authFlag.get() == 0) {
+            while (WebSocketResolver.authFlag.get() == 0) {
             }
-            if (MainViewModel.authFlag.get() == 1) {
+            if (WebSocketResolver.authFlag.get() == 1) {
                 val intent = Intent(this@SignUp, MainActivity::class.java)
                 finish()
                 startActivity(intent)
