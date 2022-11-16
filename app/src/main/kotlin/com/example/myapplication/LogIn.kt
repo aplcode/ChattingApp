@@ -9,7 +9,7 @@ import com.example.myapplication.dto.CustomerLogInInfoDto
 import kotlinx.android.synthetic.main.activity_log_in.*
 
 class LogIn : AppCompatActivity() {
-    private val mainViewModel: WebSocketResolver = WebSocketResolver.getInstance()
+    private val webSocket = WebSocketResolver.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +31,7 @@ class LogIn : AppCompatActivity() {
     }
 
     private fun login(credentials: CustomerLogInInfoDto) {
-        mainViewModel.logIn(credentials, {
+        webSocket.logIn(credentials, {
             val intent = Intent(this, MainActivity::class.java)
             finish()
             startActivity(intent)

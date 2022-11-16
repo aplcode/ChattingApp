@@ -7,8 +7,8 @@ import androidx.work.Logger
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.dto.ResponseDto
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -25,10 +25,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
 class WebSocketResolver private constructor() : ViewModel() {
-    private val gson: Gson = GsonBuilder().registerTypeAdapter(
-        LocalDateTime::class.java,
-        GsonLocalDateTimeAdapter()
-    ).create()
+    private val mapper = jacksonObjectMapper()
 
     private val mStompClient: StompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
         .withServerHeartbeat(30000)
@@ -74,7 +71,7 @@ class WebSocketResolver private constructor() : ViewModel() {
     fun sendMessage(text: String) {
         initConnection()
         val chatSocketMessage = ChatSocketMessage(text = text, author = "Me", datetime = LocalDateTime.now())
-        sendCompletable(mStompClient.send(CHAT_LINK_SOCKET, gson.toJson(chatSocketMessage)))
+        sendCompletable(mStompClient.send(CHAT_LINK_SOCKET, mapper.writeValueAsString(chatSocketMessage)))
     }
 
     fun logIn(
@@ -110,7 +107,7 @@ class WebSocketResolver private constructor() : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Log.d(ContentValues.TAG, "Get response from topic [$topicName] ${it.payload}")
-                val message = gson.fromJson(it.payload, ResponseDto::class.java)
+                val message = mapper.readValue<ResponseDto>(it.payload)
 
                 if (message.status == 0) {
                     successful.run()
@@ -125,7 +122,7 @@ class WebSocketResolver private constructor() : ViewModel() {
     }
 
     private fun webSocketSend(url: String, data: Any) =
-        sendCompletable(mStompClient.send(url, gson.toJson(data)))
+        sendCompletable(mStompClient.send(url, mapper.writeValueAsString(data)))
 
     private fun topicListener(topicName: String, onNext: Consumer<in StompMessage>, onError: Consumer<in Throwable>) {
         val topicSubscribe = mStompClient.topic(topicName)
