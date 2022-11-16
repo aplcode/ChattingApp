@@ -2,7 +2,6 @@ plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
     id "org.jetbrains.kotlin.kapt"
-
     id "kotlin-android-extensions"
     id "dagger.hilt.android.plugin"
     id "com.google.gms.google-services"
@@ -42,10 +41,6 @@ android {
     }
 }
 
-
-
-def room_version = "2.4.2"
-
 dependencies {
     implementation "org.slf4j:slf4j-api:2.0.3"
     implementation "org.slf4j:slf4j-log4j12:2.0.3"
@@ -71,7 +66,7 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:2.44"
 
     implementation "androidx.room:room-runtime:2.5.0-beta02"
-    kapt "androidx.room:room-compiler:$room_version"
+    kapt "androidx.room:room-compiler:2.4.3"
     implementation "androidx.room:room-ktx:2.4.3"
     implementation "androidx.room:room-rxjava2:2.4.3"
 
@@ -80,11 +75,9 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.10.0"
     implementation "com.github.NaikSoftware:StompProtocolAndroid:1.6.4"
 
-
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test.ext:junit:1.1.4"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.0"
-
 
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
@@ -96,11 +89,11 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx:20.1.0")
     implementation platform("com.google.firebase:firebase-bom:31.0.3")
 
-    compileOnly("org.slf4j:slf4j-api:2.0.3")
-    compileOnly("uk.uuid.slf4j:slf4j-android:1.7.36-0")
     implementation("org.apache.logging.log4j:log4j-api:2.19.0")
-    annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
+
+    compileOnly("org.slf4j:slf4j-api:2.0.3")
+    annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0")
 }
 
 repositories {

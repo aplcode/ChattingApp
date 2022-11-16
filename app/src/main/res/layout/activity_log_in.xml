@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         tools:context=".LogIn">
         <ImageView
-                android:id="@+id/app_logo"
+                android:id="@+id/activityLogIn_appLogo"
                 android:layout_width="158dp"
                 android:layout_height="158dp"
                 android:src="@drawable/letter"
@@ -15,10 +15,10 @@
                 android:layout_marginTop="78dp"/>
 
         <EditText
-                android:id="@+id/edt_email"
+                android:id="@+id/activityLogIn_editEmail"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_below="@+id/app_logo"
+                android:layout_below="@+id/activityLogIn_appLogo"
                 android:layout_marginTop="18dp"
                 android:hint="Email"
                 android:paddingLeft="13dp"
@@ -27,10 +27,10 @@
                 android:layout_marginRight="28dp"/>
 
         <EditText
-                android:id="@+id/edt_password"
+                android:id="@+id/activityLogIn_editPassword"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_below="@+id/edt_email"
+                android:layout_below="@+id/activityLogIn_editEmail"
                 android:layout_marginTop="18dp"
                 android:hint="Password"
                 android:paddingLeft="13dp"
@@ -38,10 +38,10 @@
                 android:layout_marginLeft="28dp"
                 android:layout_marginRight="28dp"/>
         <Button
-                android:id="@+id/btnLogin"
+                android:id="@+id/activityLogIn_btnLogin"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/edt_password"
+                android:layout_below="@+id/activityLogIn_editPassword"
                 android:text="Log in"
                 android:background="@drawable/btn_background"
                 android:textColor="@color/white"
@@ -49,10 +49,10 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"/>
         <Button
-                android:id="@+id/btnSignUp"
+                android:id="@+id/activityLogIn_btnSignUp"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnLogin"
+                android:layout_below="@+id/activityLogIn_btnLogin"
                 android:text="Sign Up"
                 android:background="@drawable/btn_background"
                 android:textColor="@color/white"

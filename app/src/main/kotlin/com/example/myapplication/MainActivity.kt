@@ -6,38 +6,33 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
 
 //@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    val mainViewModel: WebSocketResolver = WebSocketResolver.getInstance()
+    private val webSocket = WebSocketResolver.getInstance()
 
-    private lateinit var userRecyclerView: RecyclerView
-    private lateinit var userList: ArrayList<User>
-    private lateinit var adapter: UserAdapter
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var mDbRef: DatabaseReference
+    private val userList: MutableList<User> = arrayListOf()
+    private val mAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        send_message_btn.setOnClickListener {
-            mainViewModel.sendMessage("Hello")
+
+        activityMain_btnSendMessage.setOnClickListener {
+            webSocket.sendMessage("Hello")
         }
 
-        mAuth = FirebaseAuth.getInstance()
-        mDbRef = FirebaseDatabase.getInstance().reference
+        val mDbRef = FirebaseDatabase.getInstance().reference
+        val adapter = UserAdapter(this, userList)
 
-        userList = ArrayList()
-        adapter = UserAdapter(this, userList)
-
-        userRecyclerView = findViewById(R.id.userRecyclerView)
-
-        userRecyclerView.layoutManager = LinearLayoutManager(this)
-        userRecyclerView.adapter = adapter
+        activityMain_userRecyclerView.layoutManager = LinearLayoutManager(this)
+        activityMain_userRecyclerView.adapter = adapter
 
         mDbRef.child("user").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -66,6 +61,7 @@ class MainActivity : AppCompatActivity() {
             finish()
             startActivity(Intent(this@MainActivity, LogIn::class.java))
         }
+
         return true
     }
 }

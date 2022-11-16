@@ -1,63 +1,68 @@
 package com.example.myapplication
 
-import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.dto.ResponseDto
-import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.example.myapplication.dto.CustomerLogInInfoDto
 import kotlinx.android.synthetic.main.activity_log_in.*
-import java.time.LocalDateTime
 
 class LogIn : AppCompatActivity() {
-    private lateinit var mAuth: FirebaseAuth
-
-    private val gson: Gson = GsonBuilder().registerTypeAdapter(
-        LocalDateTime::class.java,
-        GsonLocalDateTimeAdapter()
-    ).create()
-
     private val mainViewModel: WebSocketResolver = WebSocketResolver.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log_in)
 
         supportActionBar?.hide()
 
-        mAuth = FirebaseAuth.getInstance()
-
-        btnSignUp.setOnClickListener {
+        activityLogIn_btnSignUp.setOnClickListener {
             val intent = Intent(this, SignUp::class.java)
             startActivity(intent)
         }
 
-        btnLogin.setOnClickListener {
-            val email = edt_email.text.toString()
-            val password = edt_password.text.toString()
-
-            login(email, password)
+        activityLogIn_btnLogin.setOnClickListener {
+            val credentials = getCredentials()
+            if (credentials != null) {
+                login(credentials)
+            }
         }
     }
 
-    private fun login(email: String, password: String) {
-        mainViewModel.login(email, password,
-            {
-                Log.d(TAG, it.payload)
-                val message = gson.fromJson(it.payload, ResponseDto::class.java)
-                if (message.status == 0) {
-                    val intent = Intent(this@LogIn, MainActivity::class.java)
-                    finish()
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(this@LogIn, "User does not exist", Toast.LENGTH_SHORT).show()
-                }
-            },
-            {
-                Toast.makeText(this@LogIn, it.message, Toast.LENGTH_SHORT).show()
-            })
+    private fun login(credentials: CustomerLogInInfoDto) {
+        mainViewModel.logIn(credentials, {
+            val intent = Intent(this, MainActivity::class.java)
+            finish()
+            startActivity(intent)
+        }, {
+            androidWidgetToast("Wrong login or password")
+        }, {
+            androidWidgetToast(it.message)
+        })
     }
+
+    private fun getCredentials(): CustomerLogInInfoDto? {
+        val email = activityLogIn_editEmail.text.toString()
+        val password = activityLogIn_editPassword.text.toString()
+
+        if (email.isBlank()) {
+            activityLogIn_editEmail.setHintTextColor(Color.RED)
+            androidWidgetToast("email must not be empty")
+            return null
+        }
+
+        if (password.isBlank()) {
+            activityLogIn_editPassword.setHintTextColor(Color.RED)
+            androidWidgetToast("Password must not be empty")
+            return null
+        }
+
+        return CustomerLogInInfoDto(
+            login = email,
+            password = password,
+        )
+    }
+
+    private fun androidWidgetToast(message: String?) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }

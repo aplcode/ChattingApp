@@ -1,47 +1,97 @@
 package com.example.myapplication
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.os.Looper
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.dto.CustomerSignUpInfoDto
+import kotlinx.android.synthetic.main.activity_sign_up.*
+import java.util.regex.Pattern
 
 class SignUp : AppCompatActivity() {
+    private val webSocket = WebSocketResolver.getInstance()
 
-    private val mainViewModel = WebSocketResolver.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
 
         supportActionBar?.hide()
 
-        findViewById<Button>(R.id.btnSignUp).setOnClickListener {
-            val name = findViewById<EditText>(R.id.edt_name).text.toString()
-            val surname = findViewById<EditText>(R.id.edt_surname).text.toString()
-            val email = findViewById<EditText>(R.id.edt_email).text.toString()
-            val password = findViewById<EditText>(R.id.edt_password).text.toString()
-
-            signUp(name, surname, email, password)
+        setButtonActive()
+        activityLogIn_btnSignUp.setOnClickListener {
+            val credentials = getCredentials()
+            if (credentials != null) {
+                signUp(credentials)
+            }
         }
     }
 
-    private fun signUp(name: String, surname : String, email: String, password: String) =
-        Thread {
-            mainViewModel.signup(name, surname, email, password)
-            while (WebSocketResolver.getAuthFlag().get() == 0) {
-                Thread.sleep(100)
-            }
+    private fun signUp(credentials: CustomerSignUpInfoDto) {
+        setButtonInactive()
+        webSocket.signUp(credentials, {
+            val intent = Intent(this, MainActivity::class.java)
+            finish()
+            startActivity(intent)
+        }, {
+            androidWidgetToast("Error registration")
+            setButtonActive()
+        }, {
+            androidWidgetToast(it.message)
+            setButtonActive()
+        })
+    }
 
-            if (WebSocketResolver.getAuthFlag().get() == 1) {
-                val intent = Intent(this@SignUp, MainActivity::class.java)
-                finish()
-                startActivity(intent)
-            } else {
-                Looper.prepare()
-                Toast.makeText(this@SignUp, "User already exist", Toast.LENGTH_SHORT).show()
-            }
-        }.start()
+    private fun getCredentials(): CustomerSignUpInfoDto? {
+        val name = activitySignUp_editName.text.toString()
+        val surname = activitySignUp_editSurname.text.toString()
+        val email = activitySignUp_editEmail.text.toString()
+        val password = activitySignUp_editPassword.text.toString()
 
+        if (name.isBlank()) {
+            activitySignUp_editName.setHintTextColor(Color.RED)
+            androidWidgetToast("Name must not be empty")
+            return null
+        }
+
+        if (surname.isBlank()) {
+            activitySignUp_editSurname.setHintTextColor(Color.RED)
+            androidWidgetToast("Surname must not be empty")
+            return null
+        }
+
+        if (!emailValidatePattern.matcher(email).matches()) {
+            activitySignUp_editEmail.setHintTextColor(Color.RED)
+            activitySignUp_editEmail.setTextColor(Color.RED)
+            androidWidgetToast("email template is email@sandbox.com")
+            return null
+        }
+
+        if (password.isBlank()) {
+            activitySignUp_editPassword.setHintTextColor(Color.RED)
+            androidWidgetToast("Password must not be empty")
+            return null
+        }
+
+        return CustomerSignUpInfoDto(
+            firstname = name,
+            lastname = surname,
+            emailAddress = email,
+            password = password,
+        )
+    }
+
+    private fun androidWidgetToast(message: String?) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
+    private fun setButtonInactive() {
+        activityLogIn_btnSignUp.isClickable = false
+    }
+
+    private fun setButtonActive() {
+        activityLogIn_btnSignUp.isClickable = true
+    }
+
+    companion object {
+        private val emailValidatePattern = Pattern.compile("^[a-zA-Z0-9]{1,20}@[a-z]{1,20}\\.(ru|com|net)\$")
+    }
 }
