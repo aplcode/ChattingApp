@@ -1,10 +1,13 @@
-package com.example.myapplication
+package com.example.myapplication.authorization
 
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.MainActivity
+import com.example.myapplication.R
+import com.example.myapplication.util.WebSocketResolver
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import java.util.regex.Pattern

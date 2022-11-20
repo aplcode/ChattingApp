@@ -1,9 +1,9 @@
-package com.example.myapplication
+package com.example.myapplication.util
 
 import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.work.Logger
+import com.example.myapplication.ChatSocketMessage
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.dto.ResponseDto
@@ -14,20 +14,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import ua.naiksoftware.stomp.Stomp
-import ua.naiksoftware.stomp.StompClient
-import ua.naiksoftware.stomp.dto.LifecycleEvent
-import ua.naiksoftware.stomp.dto.StompMessage
-import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider.TAG
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicBoolean
+import ua.naiksoftware.stomp.Stomp
+import ua.naiksoftware.stomp.Stomp.ConnectionProvider
+import ua.naiksoftware.stomp.StompClient
+import ua.naiksoftware.stomp.dto.LifecycleEvent
+import ua.naiksoftware.stomp.dto.StompMessage
+import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider.TAG
 
 class WebSocketResolver private constructor() : ViewModel() {
     private val mapper = jacksonObjectMapper()
 
-    private val mStompClient: StompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
+    private val stompClient: StompClient = Stomp.over(ConnectionProvider.OKHTTP, SOCKET_URL)
         .withServerHeartbeat(30000)
 
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -40,7 +41,7 @@ class WebSocketResolver private constructor() : ViewModel() {
         initFlag.set(true)
         resetSubscriptions()
 
-        val lifecycleSubscribe = mStompClient.lifecycle()
+        val lifecycleSubscribe = stompClient.lifecycle()
             .subscribeOn(Schedulers.io(), false)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
@@ -58,12 +59,13 @@ class WebSocketResolver private constructor() : ViewModel() {
 
         compositeDisposable.add(lifecycleSubscribe)
 
-        if (!mStompClient.isConnected) {
-            mStompClient.connect()
+        if (!stompClient.isConnected) {
+            stompClient.connect()
         }
     }
 
     private fun resetSubscriptions() {
+        Log.i(TAG, "Reset subscriptions")
         compositeDisposable.dispose()
         compositeDisposable = CompositeDisposable()
     }
@@ -71,11 +73,12 @@ class WebSocketResolver private constructor() : ViewModel() {
     fun sendMessage(text: String) {
         initConnection()
         val chatSocketMessage = ChatSocketMessage(text = text, author = "Me", datetime = LocalDateTime.now())
-        sendCompletable(mStompClient.send(CHAT_LINK_SOCKET, mapper.writeValueAsString(chatSocketMessage)))
+        sendCompletable(stompClient.send(CHAT_LINK_SOCKET, mapper.writeValueAsString(chatSocketMessage)))
     }
 
     fun logIn(
-        credentials: CustomerLogInInfoDto, successful: Runnable,
+        credentials: CustomerLogInInfoDto,
+        successful: Runnable,
         unsuccessful: Runnable,
         error: java.util.function.Consumer<in Throwable>,
     ) {
@@ -93,7 +96,7 @@ class WebSocketResolver private constructor() : ViewModel() {
     ) {
         initConnection()
 
-        topicListenerResponseDto("/topic/signup", successful, unsuccessful, error)
+        topicListenerResponseDto("$TOPIC_URL/signup", successful, unsuccessful, error)
         webSocketSend(SIGNUP_LINK_SOCKET, credentials)
     }
 
@@ -102,7 +105,7 @@ class WebSocketResolver private constructor() : ViewModel() {
         unsuccessful: Runnable,
         error: java.util.function.Consumer<in Throwable>,
     ) {
-        val topicSubscribe = mStompClient.topic(topicName)
+        val topicSubscribe = stompClient.topic(topicName)
             .subscribeOn(Schedulers.io(), false)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -122,10 +125,10 @@ class WebSocketResolver private constructor() : ViewModel() {
     }
 
     private fun webSocketSend(url: String, data: Any) =
-        sendCompletable(mStompClient.send(url, mapper.writeValueAsString(data)))
+        sendCompletable(stompClient.send(url, mapper.writeValueAsString(data)))
 
     private fun topicListener(topicName: String, onNext: Consumer<in StompMessage>, onError: Consumer<in Throwable>) {
-        val topicSubscribe = mStompClient.topic(topicName)
+        val topicSubscribe = stompClient.topic(topicName)
             .subscribeOn(Schedulers.io(), false)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(onNext, onError)
@@ -145,7 +148,7 @@ class WebSocketResolver private constructor() : ViewModel() {
     }
 
     @Suppress("unused")
-    fun healthCheck() {
+    private fun healthCheck() {
         val url = URL("$HTTP_PROTOCOL$URL/actuator/health")
 
         with(url.openConnection() as HttpURLConnection) {
@@ -159,31 +162,32 @@ class WebSocketResolver private constructor() : ViewModel() {
     override fun onCleared() {
         super.onCleared()
 
-        mStompClient.disconnect()
+        stompClient.disconnect()
         compositeDisposable.dispose()
     }
 
     init {
         initFlag.set(false)
-
         initConnection()
     }
 
     companion object {
         private val initFlag = AtomicBoolean()
         private val instance = WebSocketResolver()
+        fun getInstance() = instance
+
+        private val sessionId = SessionContext.CurrentSession.id
 
         private const val HTTP_PROTOCOL = "http://"
         private const val WS_PROTOCOL = "ws://"
-        private const val URL = "37.192.212.41:5000"
+        private const val URL = "192.168.0.108:5000"
+
         private const val PATH = "/api/v1/chat"
         private const val SOCKET_URL = "$WS_PROTOCOL$URL$PATH/websocket"
         private const val CHAT_LINK_SOCKET = "$PATH/sock"
-        private const val LOGIN_LINK_SOCKET = "$PATH/login"
-        private const val SIGNUP_LINK_SOCKET = "$PATH/signup"
 
-        private val logger = Logger.LogcatLogger(Log.DEBUG)
-
-        fun getInstance() = instance
+        private val LOGIN_LINK_SOCKET = "$PATH/login/?token=$sessionId"
+        private val SIGNUP_LINK_SOCKET = "$PATH/signup/?token=$sessionId"
+        private val TOPIC_URL = "/topic/?token=$sessionId"
     }
 }

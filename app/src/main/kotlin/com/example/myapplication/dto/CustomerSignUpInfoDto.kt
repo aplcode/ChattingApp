@@ -4,5 +4,5 @@ data class CustomerSignUpInfoDto(
     val firstname: String,
     val lastname: String,
     val emailAddress: String,
-    val password: String
+    val password: String,
 )
