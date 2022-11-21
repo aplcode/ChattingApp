@@ -12,7 +12,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.net.HttpURLConnection
 import java.net.URL
@@ -22,7 +21,6 @@ import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.Stomp.ConnectionProvider
 import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
-import ua.naiksoftware.stomp.dto.StompMessage
 import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider.TAG
 
 class WebSocketResolver private constructor() : ViewModel() {
@@ -83,8 +81,7 @@ class WebSocketResolver private constructor() : ViewModel() {
         error: java.util.function.Consumer<in Throwable>,
     ) {
         initConnection()
-        topicListenerResponseDto("/topic/login", successful, unsuccessful, error)
-
+        topicListenerResponseDto("$TOPIC_URL/login", successful, unsuccessful, error)
         webSocketSend(LOGIN_LINK_SOCKET, credentials)
     }
 
@@ -95,7 +92,6 @@ class WebSocketResolver private constructor() : ViewModel() {
         error: java.util.function.Consumer<in Throwable>,
     ) {
         initConnection()
-
         topicListenerResponseDto("$TOPIC_URL/signup", successful, unsuccessful, error)
         webSocketSend(SIGNUP_LINK_SOCKET, credentials)
     }
@@ -121,30 +117,22 @@ class WebSocketResolver private constructor() : ViewModel() {
                 error.accept(it)
             })
 
+        resetSubscriptions()
         compositeDisposable.add(topicSubscribe)
     }
 
     private fun webSocketSend(url: String, data: Any) =
         sendCompletable(stompClient.send(url, mapper.writeValueAsString(data)))
 
-    private fun topicListener(topicName: String, onNext: Consumer<in StompMessage>, onError: Consumer<in Throwable>) {
-        val topicSubscribe = stompClient.topic(topicName)
-            .subscribeOn(Schedulers.io(), false)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(onNext, onError)
-
-        compositeDisposable.add(topicSubscribe)
-    }
-
     private fun sendCompletable(request: Completable) {
-        compositeDisposable.add(
-            request.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { Log.d(TAG, "Stomp sent") },
-                    { Log.e(TAG, "Stomp error", it) }
-                )
-        )
+        val callback =  request.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Log.d(TAG, "Stomp sent") },
+                { Log.e(TAG, "Stomp error", it) }
+            )
+
+        compositeDisposable.add(callback)
     }
 
     @Suppress("unused")
