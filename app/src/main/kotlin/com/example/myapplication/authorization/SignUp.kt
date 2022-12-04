@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.MainActivity
+import com.example.myapplication.activity.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.util.WebSocketResolver
 import com.example.myapplication.dto.CustomerSignUpInfoDto
@@ -95,6 +95,9 @@ class SignUp : AppCompatActivity() {
     }
 
     companion object {
+        private lateinit var username: String
         private val emailValidatePattern = Pattern.compile("^[a-zA-Z0-9]{1,20}@[a-z]{1,20}\\.(ru|com|net)\$")
+
+        fun getUsernameIsInit(): String? = if (this::username.isInitialized) username else null
     }
 }

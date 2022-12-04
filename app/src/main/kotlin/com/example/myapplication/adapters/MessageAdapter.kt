@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
+import com.example.myapplication.R
+import com.example.myapplication.dto.MessageDto
+import com.example.myapplication.util.getCurrentUsername
 
-class MessageAdapter(private val context: Context, private val messageList: ArrayList<Message>) :
+class MessageAdapter(private val context: Context, private val messageList: List<MessageDto>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     enum class ItemState {
@@ -30,27 +32,30 @@ class MessageAdapter(private val context: Context, private val messageList: Arra
         val currentMessage = messageList[position]
         when (holder) {
             is SentViewHolder -> {
-                holder.sentMessage.text = currentMessage.message
+                holder.sentMessage.text = currentMessage.text
             }
 
             is ReceiveViewHolder -> {
-                holder.receiveMessage.text = currentMessage.message
+                holder.receiveMessage.text = currentMessage.text
             }
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         val currentMessage = messageList[position]
-        return if (FirebaseAuth.getInstance().currentUser?.uid.equals(currentMessage.senderId)) {
+        val username = getCurrentUsername()
+        return if (currentMessage.fromEmailAddress == username) {
             ItemState.ITEM_SENT.ordinal
         } else {
             ItemState.ITEM_RECEIVE.ordinal
         }
     }
+
     class SentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val sentMessage: TextView = itemView.findViewById(R.id.txt_sent_message)
+        val sentMessage: TextView = itemView.findViewById(R.id.send_txtSentMessageBox)
     }
+
     class ReceiveViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val receiveMessage: TextView = itemView.findViewById(R.id.txt_receive_message)
+        val receiveMessage: TextView = itemView.findViewById(R.id.receive_txtReceiveMessageBox)
     }
 }

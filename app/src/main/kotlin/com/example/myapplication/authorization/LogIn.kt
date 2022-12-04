@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.MainActivity
+import com.example.myapplication.activity.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.util.WebSocketResolver
@@ -39,6 +39,7 @@ class LogIn : AppCompatActivity() {
     private fun login(credentials: CustomerLogInInfoDto) {
         setButtonInactive()
         webSocket.logIn(credentials, {
+            username = credentials.login
             val intent = Intent(this, MainActivity::class.java)
             finish()
             startActivity(intent)
@@ -74,7 +75,7 @@ class LogIn : AppCompatActivity() {
     }
 
     private fun setButtonInactive() {
-//        activityLogIn_btnLogin.isClickable = false
+        activityLogIn_btnLogin.isClickable = false
     }
 
     private fun setButtonActive() {
@@ -83,4 +84,10 @@ class LogIn : AppCompatActivity() {
 
 
     private fun androidWidgetToast(message: String?) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
+    companion object {
+        private lateinit var username: String
+
+        fun getUsernameIsInit(): String? = if (this::username.isInitialized) username else null
+    }
 }
