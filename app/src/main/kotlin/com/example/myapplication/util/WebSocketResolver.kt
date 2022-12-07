@@ -2,27 +2,22 @@ package com.example.myapplication.util
 
 import android.content.ContentValues
 import android.util.Log
-import com.example.myapplication.dto.CustomerLogInInfoDto
-import com.example.myapplication.dto.CustomerSignUpInfoDto
-import com.example.myapplication.dto.DialogDto
-import com.example.myapplication.dto.MessageDto
-import com.example.myapplication.dto.ResponseDto
-import com.example.myapplication.dto.UserDto
+import com.example.myapplication.dto.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.function.Consumer
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.Stomp.ConnectionProvider
 import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider.TAG
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.function.Consumer
 
 class WebSocketResolver private constructor() {
     private val mapper = jacksonObjectMapper()
@@ -302,7 +297,7 @@ class WebSocketResolver private constructor() {
 
         private const val HTTP_PROTOCOL = "http://"
         private const val WS_PROTOCOL = "ws://"
-        private const val URL = "192.168.0.107:5000"
+        private const val URL = "37.192.212.41:5000"
 
         private const val PATH = "/api/v1/chat"
         private const val SOCKET_URL = "$WS_PROTOCOL$URL$PATH/websocket"

@@ -8,24 +8,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.example.myapplication.R
-import com.example.myapplication.Welcome
 import com.example.myapplication.activity.MainActivity
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.util.WebSocketResolver
+import kotlinx.android.synthetic.main.activity_log_in.*
 import java.util.regex.Pattern
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_LoginEmail
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_LoginPassword
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInEmail
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInName
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInPassword
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInSurname
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_btnLogin
-import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_btnSignIn
-import kotlinx.android.synthetic.main.activity_log_in.logIn
-import kotlinx.android.synthetic.main.activity_log_in.logInLayout
-import kotlinx.android.synthetic.main.activity_log_in.singUp
-import kotlinx.android.synthetic.main.activity_log_in.singUpLayout
 
 class LogIn : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
@@ -85,6 +73,22 @@ class LogIn : AppCompatActivity() {
         })
     }
 
+    private fun signUp(credentials: CustomerSignUpInfoDto) {
+        setButtonInactive()
+        webSocket.signUp(credentials, {
+            username = credentials.emailAddress
+            val intent = Intent(this, MainActivity::class.java)
+            finish()
+            startActivity(intent)
+        }, {
+            androidWidgetToast("Error registration")
+            setButtonActive()
+        }, {
+            androidWidgetToast(it.message)
+            setButtonActive()
+        })
+    }
+
     private fun getCredentialsLogIn(): CustomerLogInInfoDto? {
         val email = activityLogIn_LoginEmail.text.toString()
         val password = activityLogIn_LoginPassword.text.toString()
@@ -105,21 +109,6 @@ class LogIn : AppCompatActivity() {
             login = email,
             password = password,
         )
-    }
-
-    private fun signUp(credentials: CustomerSignUpInfoDto) {
-        setButtonInactive()
-        webSocket.signUp(credentials, {
-            val intent = Intent(this, Welcome::class.java)
-            finish()
-            startActivity(intent)
-        }, {
-            androidWidgetToast("Error registration")
-            setButtonActive()
-        }, {
-            androidWidgetToast(it.message)
-            setButtonActive()
-        })
     }
 
     private fun getCredentialsSignUp(): CustomerSignUpInfoDto? {
