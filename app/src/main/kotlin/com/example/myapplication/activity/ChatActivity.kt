@@ -34,35 +34,32 @@ open class ChatActivity : AppCompatActivity() {
         activityChat_chatRecyclerView.adapter = messageAdapter
 
         webSocket.getOldMessages(username to partnerUsername,
-            {
-                Log.i(ContentValues.TAG, "Message history size: [${it.size}]")
+            object: WebSocketResolver.ListenableFuture<List<MessageDto>> {
+                override fun onSuccessful(result: List<MessageDto>) {
+                    Log.i(ContentValues.TAG, "Old messages is got")
 
-                if (it.isEmpty()) {
-                    Log.i(ContentValues.TAG, "Empty message history")
-                    //TODO если сообщений нету
-                } else {
-                    messageList.addAll(it)
+                    if (result.isEmpty()) {
+                        Log.i(ContentValues.TAG, "Empty message history")
+                    } else {
+                        Log.i(ContentValues.TAG, "Message history size: [${result.size}]")
+                        messageList.addAll(result)
+                    }
+
+                    messageAdapter.notifyItemRangeInserted(messageList.lastIndex, result.size)
                 }
-
-                messageAdapter.notifyDataSetChanged() //TODO: убрать ворнинги
-                Log.i(ContentValues.TAG, "Old messages is got")
-            }, {
-                Log.e(ContentValues.TAG, "unsuccessful ${this.javaClass.name}")
-            }, {
-                Log.e(ContentValues.TAG, "error ${this.javaClass.name}", it)
             })
 
         activityChat_sendButton.setOnClickListener {
             val message = activityChat_messageBox.text.toString()
             val messageDto = MessageDto(username, partnerUsername, message, LocalDateTime.now().toString())
-            webSocket.sendMessage(messageDto, {
-                Log.i(ContentValues.TAG, "Message sent successfully")
-                messageList.add(messageDto)
-                messageAdapter.notifyDataSetChanged() //TODO: убрать ворнинги
-            }, {
-                Log.e(ContentValues.TAG, "unsuccessful ${this.javaClass.name}")
-            }, {
-                Log.e(ContentValues.TAG, "error ${this.javaClass.name}")
+
+            webSocket.sendMessage(messageDto,
+            object: WebSocketResolver.ListenableFuture<Nothing?> {
+                override fun onSuccessful(result: Nothing?) {
+                    Log.i(ContentValues.TAG, "Message sent successfully")
+                    messageList.add(messageDto)
+                    messageAdapter.notifyItemInserted(messageList.lastIndex)
+                }
             })
 
             activityChat_messageBox.setText("")

@@ -25,7 +25,8 @@ class Authorization : AppCompatActivity() {
         supportActionBar?.hide()
 
         activityAuthorization_switcherSingUp.setOnClickListener {
-            activityAuthorization_switcherSingUp.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
+            activityAuthorization_switcherSingUp.background =
+                ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
             activityAuthorization_switcherSingUp.setTextColor(resources.getColor(R.color.textColor, null))
             activityAuthorization_switcherLogIn.background = null
             activityAuthorization_singUpLayout.visibility = View.VISIBLE
@@ -36,7 +37,8 @@ class Authorization : AppCompatActivity() {
         activityAuthorization_switcherLogIn.setOnClickListener {
             activityAuthorization_switcherSingUp.background = null
             activityAuthorization_switcherSingUp.setTextColor(resources.getColor(R.color.pinkColor, null))
-            activityAuthorization_switcherLogIn.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
+            activityAuthorization_switcherLogIn.background =
+                ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
             activityAuthorization_singUpLayout.visibility = View.GONE
             activityAuthorization_logInLayout.visibility = View.VISIBLE
             activityAuthorization_switcherLogIn.setTextColor(resources.getColor(R.color.textColor, null))
@@ -59,34 +61,48 @@ class Authorization : AppCompatActivity() {
 
     private fun login(credentials: CustomerLogInInfoDto) {
         setButtonInactive()
-        webSocket.logIn(credentials, {
-            username = credentials.login
-            val intent = Intent(this, MainActivity::class.java)
-            finish()
-            startActivity(intent)
-        }, {
-            androidWidgetToast("Wrong login or password")
-            setButtonActive()
-        }, {
-            androidWidgetToast(it.message)
-            setButtonActive()
-        })
+        webSocket.logIn(credentials,
+            object : WebSocketResolver.ListenableFuture<Nothing?> {
+                override fun onSuccessful(result: Nothing?) {
+                    username = credentials.login
+                    val intent = Intent(this@Authorization, MainActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                }
+
+                override fun onUnsuccessful() {
+                    androidWidgetToast("Wrong login or password")
+                    setButtonActive()
+                }
+
+                override fun onException(exception: Throwable) {
+                    androidWidgetToast(exception.message)
+                    setButtonActive()
+                }
+            })
     }
 
     private fun signUp(credentials: CustomerSignUpInfoDto) {
         setButtonInactive()
-        webSocket.signUp(credentials, {
-            username = credentials.emailAddress
-            val intent = Intent(this, MainActivity::class.java)
-            finish()
-            startActivity(intent)
-        }, {
-            androidWidgetToast("Error registration")
-            setButtonActive()
-        }, {
-            androidWidgetToast(it.message)
-            setButtonActive()
-        })
+        webSocket.signUp(credentials,
+            object : WebSocketResolver.ListenableFuture<Nothing?> {
+                override fun onSuccessful(result: Nothing?) {
+                    username = credentials.emailAddress
+                    val intent = Intent(this@Authorization, MainActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                }
+
+                override fun onUnsuccessful() {
+                    androidWidgetToast("Error registration")
+                    super.onUnsuccessful()
+                }
+
+                override fun onException(exception: Throwable) {
+                    androidWidgetToast(exception.message)
+                    super.onException(exception)
+                }
+            })
     }
 
     private fun getCredentialsLogIn(): CustomerLogInInfoDto? {

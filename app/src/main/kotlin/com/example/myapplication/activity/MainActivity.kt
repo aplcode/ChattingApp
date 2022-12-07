@@ -16,7 +16,9 @@ import com.example.myapplication.dto.DialogDto
 import com.example.myapplication.dto.UserDto
 import com.example.myapplication.util.WebSocketResolver
 import com.example.myapplication.util.getCurrentUsername
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.activityMain_btnStartNewDialog
+import kotlinx.android.synthetic.main.activity_main.activityMain_textBar
+import kotlinx.android.synthetic.main.activity_main.activityMain_userRecyclerView
 
 class MainActivity : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
@@ -40,24 +42,21 @@ class MainActivity : AppCompatActivity() {
 
         webSocket.getDialogs(
             UserDto(getCurrentUsername()),
-            {
-                Log.i(ContentValues.TAG, "Dialogs list size: [${it.size}]")
+            object : WebSocketResolver.ListenableFuture<List<DialogDto>> {
+                override fun onSuccessful(result: List<DialogDto>) {
+                    Log.i(ContentValues.TAG, "Dialogs is gotten")
 
-                if (it.isEmpty()) {
-                    activityMain_textBar.text = "В данный момент у вас нет диалогов. Попробуйте начать новый!"
-                    activityMain_textBar.visibility = View.VISIBLE
-                } else {
-                    userList.addAll(it)
+                    if (result.isEmpty()) {
+                        activityMain_textBar.text = "В данный момент у вас нет диалогов. Попробуйте начать новый!"
+                        activityMain_textBar.visibility = View.VISIBLE
+                    } else {
+                        Log.i(ContentValues.TAG, "Dialogs list size: [${result.size}]")
+                        userList.addAll(result)
+                    }
+
+                    adapter.notifyDataSetChanged()
                 }
-
-                adapter.notifyDataSetChanged()
-                Log.i(ContentValues.TAG, "Dialogs is getted")
-            }, {
-                Log.e(ContentValues.TAG, "unsuccessful ${this.javaClass.name}")
-            }, {
-                Log.e(ContentValues.TAG, "error ${this.javaClass.name}")
-            }
-        )
+            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
