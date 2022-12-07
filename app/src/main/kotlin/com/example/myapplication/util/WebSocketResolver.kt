@@ -30,27 +30,42 @@ class WebSocketResolver private constructor() {
     private val stompClient: StompClient = Stomp.over(ConnectionProvider.OKHTTP, SOCKET_URL)
         .withServerHeartbeat(30000)
 
-    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private var compositeDisposable = CompositeDisposable()
+    private var compositeDisposableChats = CompositeDisposable()
 
     fun logIn(
         credentials: CustomerLogInInfoDto,
         successful: Runnable,
         unsuccessful: Runnable,
         error: Consumer<in Throwable>,
-    ) = listenTopicAndSend("$TOPIC_URL_SESSION_ID/login", LOGIN_LINK_SOCKET, credentials, successful, unsuccessful, error)
+    ) = listenTopicAndSend(
+        "$TOPIC_URL_SESSION_ID/login",
+        LOGIN_LINK_SOCKET,
+        credentials,
+        successful,
+        unsuccessful,
+        error
+    )
 
     fun signUp(
         credentials: CustomerSignUpInfoDto,
         successful: Runnable,
         unsuccessful: Runnable,
         error: Consumer<in Throwable>,
-    ) = listenTopicAndSend("$TOPIC_URL_SESSION_ID/signup", SIGNUP_LINK_SOCKET, credentials, successful, unsuccessful, error)
+    ) = listenTopicAndSend(
+        "$TOPIC_URL_SESSION_ID/signup",
+        SIGNUP_LINK_SOCKET,
+        credentials,
+        successful,
+        unsuccessful,
+        error
+    )
 
     fun getDialogs(
         user: UserDto,
         successful: Consumer<List<DialogDto>>,
         unsuccessful: Runnable,
-        error: Consumer<in Throwable>
+        error: Consumer<in Throwable>,
     ) {
         initConnection()
         topicListenerDialogDto("${getTopicUrlPersonalToken()}/getDialogs", successful, unsuccessful, error)
@@ -61,7 +76,7 @@ class WebSocketResolver private constructor() {
         users: Pair<String, String>,
         successful: Consumer<List<MessageDto>>,
         unsuccessful: Runnable,
-        error: Consumer<in Throwable>
+        error: Consumer<in Throwable>,
     ) {
         initConnection()
         topicListenerMessageDto("${getTopicUrlPersonalToken()}/getMessages", successful, unsuccessful, error)
@@ -72,7 +87,7 @@ class WebSocketResolver private constructor() {
         dto: MessageDto,
         successful: Runnable,
         unsuccessful: Runnable,
-        error: Consumer<in Throwable>
+        error: Consumer<in Throwable>,
     ) {
         initConnection()
         topicListenerResponseDto("${getTopicUrlPersonalToken()}/sendMessage", successful, unsuccessful, error)
@@ -112,7 +127,7 @@ class WebSocketResolver private constructor() {
                 }
             }, error::accept)
 
-        resetSubscriptions()
+        resetTemporarySubscriptions()
         compositeDisposable.add(topicSubscribe)
     }
 
@@ -127,7 +142,10 @@ class WebSocketResolver private constructor() {
             .subscribe({
                 try {
                     val dialogsList = mapper.readValue<List<DialogDto>>(it.payload)
-                    Log.d(ContentValues.TAG, "Get response from topic [$topicName]. Receive list with [${dialogsList.size}] dialogs")
+                    Log.d(
+                        ContentValues.TAG,
+                        "Get response from topic [$topicName]. Receive list with [${dialogsList.size}] dialogs"
+                    )
                     successful.accept(dialogsList)
                 } catch (e: Exception) {
                     Log.e(ContentValues.TAG, "Get response from topic [$topicName] with exception:", e)
@@ -135,8 +153,25 @@ class WebSocketResolver private constructor() {
                 }
             }, error::accept)
 
-        resetSubscriptions()
+        resetTemporarySubscriptions()
         compositeDisposable.add(topicSubscribe)
+
+        val subscribeToReceiveMessages = stompClient.topic(getTopicUrlPersonalToken() + "/getNewDialog")
+            .subscribeOn(Schedulers.io(), false)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                try {
+                    val dialogDto = mapper.readValue<DialogDto>(it.payload)
+                    Log.d(ContentValues.TAG, "Receive new dialog with [${dialogDto.getPartner(getCurrentUsername())}]")
+                    successful.accept(listOf(dialogDto))
+                } catch (e: Exception) {
+                    Log.e(ContentValues.TAG, "Get response from topic [$topicName] with exception:", e)
+                    unsuccessful.run()
+                }
+            }, error::accept)
+
+        resetChatSubscriptions()
+        compositeDisposableChats.add(subscribeToReceiveMessages)
     }
 
     private fun topicListenerMessageDto(
@@ -150,7 +185,10 @@ class WebSocketResolver private constructor() {
             .subscribe({
                 try {
                     val messagesList = mapper.readValue<List<MessageDto>>(it.payload)
-                    Log.d(ContentValues.TAG, "Get response from topic [$topicName]. Receive list with [${messagesList.size}] dialogs")
+                    Log.d(
+                        ContentValues.TAG,
+                        "Get response from topic [$topicName]. Receive list with [${messagesList.size}] dialogs"
+                    )
                     successful.accept(messagesList)
                 } catch (e: Exception) {
                     Log.e(ContentValues.TAG, "Get response from topic [$topicName] with exception:", e)
@@ -158,8 +196,25 @@ class WebSocketResolver private constructor() {
                 }
             }, error::accept)
 
-        resetSubscriptions()
+        resetTemporarySubscriptions()
         compositeDisposable.add(topicSubscribe)
+
+        val subscribeToReceiveMessages = stompClient.topic(getTopicUrlPersonalToken() + "/getNewMessage")
+            .subscribeOn(Schedulers.io(), false)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                try {
+                    val messagesDto = mapper.readValue<MessageDto>(it.payload)
+                    Log.d(ContentValues.TAG, "Receive new message from [${messagesDto.fromEmailAddress}]")
+                    successful.accept(listOf(messagesDto))
+                } catch (e: Exception) {
+                    Log.e(ContentValues.TAG, "Get response from topic [$topicName] with exception:", e)
+                    unsuccessful.run()
+                }
+            }, error::accept)
+
+        resetChatSubscriptions()
+        compositeDisposableChats.add(subscribeToReceiveMessages)
     }
 
     private fun webSocketSend(url: String, data: Any) =
@@ -194,7 +249,7 @@ class WebSocketResolver private constructor() {
         }
 
         initFlag.set(true)
-        resetSubscriptions()
+        resetTemporarySubscriptions()
 
         val lifecycleSubscribe = stompClient.lifecycle()
             .subscribeOn(Schedulers.io(), false)
@@ -219,10 +274,16 @@ class WebSocketResolver private constructor() {
         }
     }
 
-    private fun resetSubscriptions() {
-        Log.i(TAG, "Reset subscriptions")
+    private fun resetTemporarySubscriptions() {
+        Log.i(TAG, "Reset temporary subscriptions")
         compositeDisposable.dispose()
         compositeDisposable = CompositeDisposable()
+    }
+
+    private fun resetChatSubscriptions() {
+        Log.i(TAG, "Reset chat subscriptions")
+        compositeDisposableChats.dispose()
+        compositeDisposableChats = CompositeDisposable()
     }
 
     init {
