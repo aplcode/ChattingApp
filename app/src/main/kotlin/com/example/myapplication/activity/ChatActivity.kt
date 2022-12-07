@@ -55,7 +55,11 @@ open class ChatActivity : AppCompatActivity() {
         activityChat_sendButton.setOnClickListener {
             val message = activityChat_messageBox.text.toString()
             val messageDto = MessageDto(username, partnerUsername, message, LocalDateTime.now().toString())
-            webSocket.sendMessage(messageDto, { messageList.add(messageDto) }, {
+            webSocket.sendMessage(messageDto, {
+                Log.i(ContentValues.TAG, "Message sent successfully")
+                messageList.add(messageDto)
+                messageAdapter.notifyDataSetChanged()
+            }, {
                 Log.e(ContentValues.TAG, "unsuccessful ${this.javaClass.name}")
             }, {
                 Log.e(ContentValues.TAG, "error ${this.javaClass.name}")

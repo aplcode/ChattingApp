@@ -6,14 +6,26 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.activity.MainActivity
+import androidx.core.content.res.ResourcesCompat
 import com.example.myapplication.R
+import com.example.myapplication.Welcome
+import com.example.myapplication.activity.MainActivity
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.util.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_log_in.*
-import kotlinx.android.synthetic.main.activity_sign_up.activityLogIn_btnSignUp
 import java.util.regex.Pattern
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_LoginEmail
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_LoginPassword
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInEmail
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInName
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInPassword
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInSurname
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_btnLogin
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_btnSignIn
+import kotlinx.android.synthetic.main.activity_log_in.logIn
+import kotlinx.android.synthetic.main.activity_log_in.logInLayout
+import kotlinx.android.synthetic.main.activity_log_in.singUp
+import kotlinx.android.synthetic.main.activity_log_in.singUpLayout
 
 class LogIn : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
@@ -25,29 +37,30 @@ class LogIn : AppCompatActivity() {
         supportActionBar?.hide()
 
         singUp.setOnClickListener {
-            singUp.background = resources.getDrawable(R.drawable.switch_trcks,null)
-            singUp.setTextColor(resources.getColor(R.color.textColor,null))
+            singUp.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
+            singUp.setTextColor(resources.getColor(R.color.textColor, null))
             logIn.background = null
             singUpLayout.visibility = View.VISIBLE
             logInLayout.visibility = View.GONE
-            logIn.setTextColor(resources.getColor(R.color.pinkColor,null))
+            logIn.setTextColor(resources.getColor(R.color.pinkColor, null))
         }
+
         logIn.setOnClickListener {
             singUp.background = null
-            singUp.setTextColor(resources.getColor(R.color.pinkColor,null))
-            logIn.background = resources.getDrawable(R.drawable.switch_trcks,null)
+            singUp.setTextColor(resources.getColor(R.color.pinkColor, null))
+            logIn.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
             singUpLayout.visibility = View.GONE
             logInLayout.visibility = View.VISIBLE
-            logIn.setTextColor(resources.getColor(R.color.textColor,null))
+            logIn.setTextColor(resources.getColor(R.color.textColor, null))
         }
 
         activityLogIn_btnLogin.setOnClickListener {
             val credentialsLogIn = getCredentialsLogIn()
             if (credentialsLogIn != null) {
                 login(credentialsLogIn)
-
             }
         }
+
         activityLogIn_btnSignIn.setOnClickListener {
             val credentialsSignUp = getCredentialsSignUp()
             if (credentialsSignUp != null) {
@@ -93,6 +106,7 @@ class LogIn : AppCompatActivity() {
             password = password,
         )
     }
+
     private fun signUp(credentials: CustomerSignUpInfoDto) {
         setButtonInactive()
         webSocket.signUp(credentials, {
@@ -147,7 +161,6 @@ class LogIn : AppCompatActivity() {
         )
     }
 
-
     private fun setButtonInactive() {
         activityLogIn_btnSignIn.isClickable = false
     }
@@ -155,19 +168,6 @@ class LogIn : AppCompatActivity() {
     private fun setButtonActive() {
         activityLogIn_btnSignIn.isClickable = true
     }
-
-    companion object {
-        private val emailValidatePattern = Pattern.compile("^[a-zA-Z0-9]{1,20}@[a-z]{1,20}\\.(ru|com|net)\$")
-    }
-
-    private fun setButtonInactive() {
-        activityLogIn_btnSignIn.isClickable = false
-    }
-
-    private fun setButtonActive() {
-        activityLogIn_btnSignIn.isClickable = true
-    }
-
 
     private fun androidWidgetToast(message: String?) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 

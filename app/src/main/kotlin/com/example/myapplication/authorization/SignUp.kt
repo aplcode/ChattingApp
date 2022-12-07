@@ -5,13 +5,17 @@ import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.activity.MainActivity
 import com.example.myapplication.R
-import com.example.myapplication.util.WebSocketResolver
+import com.example.myapplication.Welcome
 import com.example.myapplication.dto.CustomerSignUpInfoDto
-import kotlinx.android.synthetic.main.activity_log_in.*
-import kotlinx.android.synthetic.main.activity_sign_up.*
+import com.example.myapplication.util.WebSocketResolver
 import java.util.regex.Pattern
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInEmail
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInName
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInPassword
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_SignInSurname
+import kotlinx.android.synthetic.main.activity_log_in.activityLogIn_btnSignIn
+import kotlinx.android.synthetic.main.activity_sign_up.activityLogIn_btnSignUp
 
 class SignUp : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()

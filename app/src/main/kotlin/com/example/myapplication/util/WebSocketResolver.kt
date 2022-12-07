@@ -37,14 +37,14 @@ class WebSocketResolver private constructor() {
         successful: Runnable,
         unsuccessful: Runnable,
         error: Consumer<in Throwable>,
-    ) = listenTopicAndSend("$TOPIC_URL/login", LOGIN_LINK_SOCKET, credentials, successful, unsuccessful, error)
+    ) = listenTopicAndSend("$TOPIC_URL_SESSION_ID/login", LOGIN_LINK_SOCKET, credentials, successful, unsuccessful, error)
 
     fun signUp(
         credentials: CustomerSignUpInfoDto,
         successful: Runnable,
         unsuccessful: Runnable,
         error: Consumer<in Throwable>,
-    ) = listenTopicAndSend("$TOPIC_URL/signup", SIGNUP_LINK_SOCKET, credentials, successful, unsuccessful, error)
+    ) = listenTopicAndSend("$TOPIC_URL_SESSION_ID/signup", SIGNUP_LINK_SOCKET, credentials, successful, unsuccessful, error)
 
     fun getDialogs(
         user: UserDto,
@@ -53,8 +53,8 @@ class WebSocketResolver private constructor() {
         error: Consumer<in Throwable>
     ) {
         initConnection()
-        topicListenerDialogDto("$TOPIC_URL/getDialogs", successful, unsuccessful, error)
-        webSocketSend(GET_DIALOGS_LINK_SOCKET, user)
+        topicListenerDialogDto("${getTopicUrlPersonalToken()}/getDialogs", successful, unsuccessful, error)
+        webSocketSend(getDialogsLinkSocket(), user)
     }
 
     fun getOldMessages(
@@ -64,8 +64,8 @@ class WebSocketResolver private constructor() {
         error: Consumer<in Throwable>
     ) {
         initConnection()
-        topicListenerMessageDto("$TOPIC_URL/getMessages", successful, unsuccessful, error)
-        webSocketSend(GET_MESSAGES_LINK_SOCKET, users)
+        topicListenerMessageDto("${getTopicUrlPersonalToken()}/getMessages", successful, unsuccessful, error)
+        webSocketSend(getMessagesLinkSocket(), users)
     }
 
     fun sendMessage(
@@ -75,8 +75,8 @@ class WebSocketResolver private constructor() {
         error: Consumer<in Throwable>
     ) {
         initConnection()
-        topicListenerResponseDto("$TOPIC_URL/sendMessage", successful, unsuccessful, error)
-        webSocketSend(SEND_MESSAGE_LINK_SOCKET, dto)
+        topicListenerResponseDto("${getTopicUrlPersonalToken()}/sendMessage", successful, unsuccessful, error)
+        webSocketSend(sendMessageLinkSocket(), dto)
     }
 
     private fun listenTopicAndSend(
@@ -106,6 +106,7 @@ class WebSocketResolver private constructor() {
 
                 if (message.status == 0) {
                     successful.run()
+                    currentUserToken = message.personalToken ?: throw RuntimeException("Personal token not defined")
                 } else {
                     unsuccessful.run()
                 }
@@ -230,6 +231,8 @@ class WebSocketResolver private constructor() {
     }
 
     companion object {
+        private var currentUserToken: String? = null
+
         private val initFlag = AtomicBoolean()
         private val instance = WebSocketResolver()
         fun getInstance() = instance
@@ -245,10 +248,12 @@ class WebSocketResolver private constructor() {
 
         private val LOGIN_LINK_SOCKET = "$PATH/login/?token=$sessionId"
         private val SIGNUP_LINK_SOCKET = "$PATH/signup/?token=$sessionId"
-        private val GET_DIALOGS_LINK_SOCKET = "$PATH/getDialogs/?token=$sessionId"
-        private val GET_MESSAGES_LINK_SOCKET = "$PATH/getMessages/?token=$sessionId"
-        private val SEND_MESSAGE_LINK_SOCKET = "$PATH/sendMessage/?token=$sessionId"
 
-        private val TOPIC_URL = "/topic/?token=$sessionId"
+        private val TOPIC_URL_SESSION_ID = "/topic/?token=$sessionId"
     }
+
+    private fun getDialogsLinkSocket() = "$PATH/getDialogs/?token=$currentUserToken"
+    private fun getMessagesLinkSocket() = "$PATH/getMessages/?token=$currentUserToken"
+    private fun sendMessageLinkSocket() = "$PATH/sendMessage/?token=$currentUserToken"
+    private fun getTopicUrlPersonalToken() = "/topic/?token=$currentUserToken"
 }
