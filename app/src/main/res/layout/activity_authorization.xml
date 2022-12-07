@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@drawable/background_login"
-        tools:context=".LogIn">
+        tools:context=".authorization.Authorization">
 
         <ImageView
                 android:src="@drawable/chat"
@@ -43,7 +43,7 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/switch_tumbs">
                                 <TextView
-                                        android:id="@+id/logIn"
+                                        android:id="@+id/activityAuthorization_switcherLogIn"
                                         android:text="Log In"
                                         android:paddingTop="5dp"
                                         android:textAlignment="center"
@@ -60,7 +60,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"/>
                                 <TextView
-                                        android:id="@+id/singUp"
+                                        android:id="@+id/activityAuthorization_switcherSingUp"
                                         android:text="Sing Up"
                                         android:paddingTop="5dp"
                                         android:textAlignment="center"
@@ -79,7 +79,7 @@
 
                         </LinearLayout>
                         <LinearLayout
-                                android:id="@+id/logInLayout"
+                                android:id="@+id/activityAuthorization_logInLayout"
                                 android:background="@color/white"
                                 android:padding="25dp"
                                 android:gravity="center"
@@ -103,7 +103,7 @@
 
                                         <com.google.android.material.textfield.TextInputEditText
                                                 android:inputType="textEmailAddress"
-                                                android:id="@+id/activityLogIn_LoginEmail"
+                                                android:id="@+id/activityAuthorization_LoginEmail"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -128,7 +128,7 @@
 
                                         <com.google.android.material.textfield.TextInputEditText
                                                 android:inputType="textPassword"
-                                                android:id="@+id/activityLogIn_LoginPassword"
+                                                android:id="@+id/activityAuthorization_LoginPassword"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -146,7 +146,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"/>
                                 <Button
-                                        android:id="@+id/activityLogIn_btnLogin"
+                                        android:id="@+id/activityAuthorization_btnLogin"
                                         android:text="Log In"
                                         android:textSize="17sp"
                                         android:textAllCaps="false"
@@ -163,7 +163,7 @@
                                         android:layout_height="wrap_content"/>
                         </LinearLayout>
                         <LinearLayout
-                                android:id="@+id/singUpLayout"
+                                android:id="@+id/activityAuthorization_singUpLayout"
                                 android:background="@color/white"
                                 android:padding="25dp"
                                 android:visibility="gone"
@@ -188,7 +188,7 @@
 
                                         <com.google.android.material.textfield.TextInputEditText
                                                 android:inputType="textEmailAddress"
-                                                android:id="@+id/activityLogIn_SignInEmail"
+                                                android:id="@+id/activityAuthorization_SignInEmail"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -213,7 +213,7 @@
                                         android:layout_height="wrap_content">
 
                                         <com.google.android.material.textfield.TextInputEditText
-                                                android:id="@+id/activityLogIn_SignInName"
+                                                android:id="@+id/activityAuthorization_SignInName"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -237,7 +237,7 @@
                                         android:layout_height="wrap_content">
 
                                         <com.google.android.material.textfield.TextInputEditText
-                                                android:id="@+id/activityLogIn_SignInSurname"
+                                                android:id="@+id/activityAuthorization_SignInSurname"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -262,7 +262,7 @@
 
                                         <com.google.android.material.textfield.TextInputEditText
                                                 android:inputType="textPassword"
-                                                android:id="@+id/activityLogIn_SignInPassword"
+                                                android:id="@+id/activityAuthorization_SignInPassword"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -297,7 +297,7 @@
                                         />
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
-                                        android:id="@+id/activityLogIn_btnSignIn"
+                                        android:id="@+id/activityAuthorization_btnSignIn"
                                         android:text="Sign In"
                                         android:textSize="17sp"
                                         android:textAllCaps="false"

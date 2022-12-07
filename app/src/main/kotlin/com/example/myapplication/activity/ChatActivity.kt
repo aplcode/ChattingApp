@@ -23,7 +23,7 @@ open class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        val partnerUsername = intent.getStringExtra("partnerUsername")!!
+        val partnerUsername = getPartnerUsernameFromContext()
         val username = getCurrentUsername()
 
         supportActionBar?.title = partnerUsername
@@ -44,7 +44,7 @@ open class ChatActivity : AppCompatActivity() {
                     messageList.addAll(it)
                 }
 
-                messageAdapter.notifyDataSetChanged()
+                messageAdapter.notifyDataSetChanged() //TODO: убрать ворнинги
                 Log.i(ContentValues.TAG, "Old messages is got")
             }, {
                 Log.e(ContentValues.TAG, "unsuccessful ${this.javaClass.name}")
@@ -58,7 +58,7 @@ open class ChatActivity : AppCompatActivity() {
             webSocket.sendMessage(messageDto, {
                 Log.i(ContentValues.TAG, "Message sent successfully")
                 messageList.add(messageDto)
-                messageAdapter.notifyDataSetChanged()
+                messageAdapter.notifyDataSetChanged() //TODO: убрать ворнинги
             }, {
                 Log.e(ContentValues.TAG, "unsuccessful ${this.javaClass.name}")
             }, {
@@ -68,4 +68,7 @@ open class ChatActivity : AppCompatActivity() {
             activityChat_messageBox.setText("")
         }
     }
+
+    private fun getPartnerUsernameFromContext() =
+        intent.getStringExtra("partnerUsername") ?: throw RuntimeException("Exception in context")
 }

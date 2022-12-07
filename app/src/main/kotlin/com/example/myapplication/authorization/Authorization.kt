@@ -12,44 +12,44 @@ import com.example.myapplication.activity.MainActivity
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.util.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_log_in.*
+import kotlinx.android.synthetic.main.activity_authorization.*
 import java.util.regex.Pattern
 
-class LogIn : AppCompatActivity() {
+class Authorization : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log_in)
+        setContentView(R.layout.activity_authorization)
 
         supportActionBar?.hide()
 
-        singUp.setOnClickListener {
-            singUp.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
-            singUp.setTextColor(resources.getColor(R.color.textColor, null))
-            logIn.background = null
-            singUpLayout.visibility = View.VISIBLE
-            logInLayout.visibility = View.GONE
-            logIn.setTextColor(resources.getColor(R.color.pinkColor, null))
+        activityAuthorization_switcherSingUp.setOnClickListener {
+            activityAuthorization_switcherSingUp.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
+            activityAuthorization_switcherSingUp.setTextColor(resources.getColor(R.color.textColor, null))
+            activityAuthorization_switcherLogIn.background = null
+            activityAuthorization_singUpLayout.visibility = View.VISIBLE
+            activityAuthorization_logInLayout.visibility = View.GONE
+            activityAuthorization_switcherLogIn.setTextColor(resources.getColor(R.color.pinkColor, null))
         }
 
-        logIn.setOnClickListener {
-            singUp.background = null
-            singUp.setTextColor(resources.getColor(R.color.pinkColor, null))
-            logIn.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
-            singUpLayout.visibility = View.GONE
-            logInLayout.visibility = View.VISIBLE
-            logIn.setTextColor(resources.getColor(R.color.textColor, null))
+        activityAuthorization_switcherLogIn.setOnClickListener {
+            activityAuthorization_switcherSingUp.background = null
+            activityAuthorization_switcherSingUp.setTextColor(resources.getColor(R.color.pinkColor, null))
+            activityAuthorization_switcherLogIn.background = ResourcesCompat.getDrawable(resources, R.drawable.switch_trcks, null)
+            activityAuthorization_singUpLayout.visibility = View.GONE
+            activityAuthorization_logInLayout.visibility = View.VISIBLE
+            activityAuthorization_switcherLogIn.setTextColor(resources.getColor(R.color.textColor, null))
         }
 
-        activityLogIn_btnLogin.setOnClickListener {
+        activityAuthorization_btnLogin.setOnClickListener {
             val credentialsLogIn = getCredentialsLogIn()
             if (credentialsLogIn != null) {
                 login(credentialsLogIn)
             }
         }
 
-        activityLogIn_btnSignIn.setOnClickListener {
+        activityAuthorization_btnSignIn.setOnClickListener {
             val credentialsSignUp = getCredentialsSignUp()
             if (credentialsSignUp != null) {
                 signUp(credentialsSignUp)
@@ -90,17 +90,17 @@ class LogIn : AppCompatActivity() {
     }
 
     private fun getCredentialsLogIn(): CustomerLogInInfoDto? {
-        val email = activityLogIn_LoginEmail.text.toString()
-        val password = activityLogIn_LoginPassword.text.toString()
+        val email = activityAuthorization_LoginEmail.text.toString()
+        val password = activityAuthorization_LoginPassword.text.toString()
 
         if (email.isBlank()) {
-            activityLogIn_LoginEmail.setHintTextColor(Color.RED)
+            activityAuthorization_LoginEmail.setHintTextColor(Color.RED)
             androidWidgetToast("email must not be empty")
             return null
         }
 
         if (password.isBlank()) {
-            activityLogIn_LoginPassword.setHintTextColor(Color.RED)
+            activityAuthorization_LoginPassword.setHintTextColor(Color.RED)
             androidWidgetToast("Password must not be empty")
             return null
         }
@@ -112,32 +112,32 @@ class LogIn : AppCompatActivity() {
     }
 
     private fun getCredentialsSignUp(): CustomerSignUpInfoDto? {
-        val name = activityLogIn_SignInName.text.toString()
-        val surname = activityLogIn_SignInSurname.text.toString()
-        val email = activityLogIn_SignInEmail.text.toString()
-        val password = activityLogIn_SignInPassword.text.toString()
+        val name = activityAuthorization_SignInName.text.toString()
+        val surname = activityAuthorization_SignInSurname.text.toString()
+        val email = activityAuthorization_SignInEmail.text.toString()
+        val password = activityAuthorization_SignInPassword.text.toString()
 
         if (name.isBlank()) {
-            activityLogIn_SignInName.setHintTextColor(Color.RED)
+            activityAuthorization_SignInName.setHintTextColor(Color.RED)
             androidWidgetToast("Name must not be empty")
             return null
         }
 
         if (surname.isBlank()) {
-            activityLogIn_SignInSurname.setHintTextColor(Color.RED)
+            activityAuthorization_SignInSurname.setHintTextColor(Color.RED)
             androidWidgetToast("Surname must not be empty")
             return null
         }
 
         if (!emailValidatePattern.matcher(email).matches()) {
-            activityLogIn_SignInEmail.setHintTextColor(Color.RED)
-            activityLogIn_SignInEmail.setTextColor(Color.RED)
+            activityAuthorization_SignInEmail.setHintTextColor(Color.RED)
+            activityAuthorization_SignInEmail.setTextColor(Color.RED)
             androidWidgetToast("email template is email@sandbox.com")
             return null
         }
 
         if (password.isBlank()) {
-            activityLogIn_SignInPassword.setHintTextColor(Color.RED)
+            activityAuthorization_SignInPassword.setHintTextColor(Color.RED)
             androidWidgetToast("Password must not be empty")
             return null
         }
@@ -151,11 +151,13 @@ class LogIn : AppCompatActivity() {
     }
 
     private fun setButtonInactive() {
-        activityLogIn_btnSignIn.isClickable = false
+        activityAuthorization_btnSignIn.isClickable = false
+        activityAuthorization_btnLogin.isClickable = false
     }
 
     private fun setButtonActive() {
-        activityLogIn_btnSignIn.isClickable = true
+        activityAuthorization_btnSignIn.isClickable = true
+        activityAuthorization_btnLogin.isClickable = true
     }
 
     private fun androidWidgetToast(message: String?) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

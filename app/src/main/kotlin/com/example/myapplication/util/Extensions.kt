@@ -1,11 +1,10 @@
 package com.example.myapplication.util
 
-import com.example.myapplication.authorization.LogIn
-import com.example.myapplication.authorization.SignUp
+import com.example.myapplication.authorization.Authorization
 import com.example.myapplication.dto.DialogDto
 
 fun getCurrentUsername() =
-    LogIn.getUsernameIsInit() ?: SignUp.getUsernameIsInit()
+    Authorization.getUsernameIsInit()
     ?: throw RuntimeException("Username is not defined")
 
 fun DialogDto.getPartner(currentUsername: String) =

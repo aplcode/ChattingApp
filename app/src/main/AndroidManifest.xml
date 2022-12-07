@@ -20,11 +20,7 @@
                 android:name=".activity.ChatActivity"
                 android:exported="false"/>
         <activity
-                android:name=".authorization.SignUp"
-                android:exported="true">
-        </activity>
-        <activity
-                android:name=".authorization.LogIn"
+                android:name=".authorization.Authorization"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

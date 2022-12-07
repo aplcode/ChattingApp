@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
 import com.example.myapplication.adapters.DialogAdapter
-import com.example.myapplication.authorization.LogIn
+import com.example.myapplication.authorization.Authorization
 import com.example.myapplication.dto.DialogDto
 import com.example.myapplication.dto.UserDto
 import com.example.myapplication.util.WebSocketResolver
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.logout) {
             finish()
-            startActivity(Intent(this, LogIn::class.java))
+            startActivity(Intent(this, Authorization::class.java))
         }
 
         return true
