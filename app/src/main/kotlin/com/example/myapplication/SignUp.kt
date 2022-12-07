@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.dto.CustomerSignUpInfoDto
+import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import java.util.regex.Pattern
 
@@ -20,7 +21,7 @@ class SignUp : AppCompatActivity() {
 
         setButtonActive()
         activityLogIn_btnSignUp.setOnClickListener {
-            val credentials = getCredentials()
+            val credentials = getCredentialsSignUp()
             if (credentials != null) {
                 signUp(credentials)
             }
@@ -30,7 +31,7 @@ class SignUp : AppCompatActivity() {
     private fun signUp(credentials: CustomerSignUpInfoDto) {
         setButtonInactive()
         webSocket.signUp(credentials, {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, Welcome::class.java)
             finish()
             startActivity(intent)
         }, {
@@ -42,33 +43,33 @@ class SignUp : AppCompatActivity() {
         })
     }
 
-    private fun getCredentials(): CustomerSignUpInfoDto? {
-        val name = activitySignUp_editName.text.toString()
-        val surname = activitySignUp_editSurname.text.toString()
-        val email = activitySignUp_editEmail.text.toString()
-        val password = activitySignUp_editPassword.text.toString()
+    private fun getCredentialsSignUp(): CustomerSignUpInfoDto? {
+        val name = activityLogIn_SignInName.text.toString()
+        val surname = activityLogIn_SignInSurname.text.toString()
+        val email = activityLogIn_SignInEmail.text.toString()
+        val password = activityLogIn_SignInPassword.text.toString()
 
         if (name.isBlank()) {
-            activitySignUp_editName.setHintTextColor(Color.RED)
+            activityLogIn_SignInName.setHintTextColor(Color.RED)
             androidWidgetToast("Name must not be empty")
             return null
         }
 
         if (surname.isBlank()) {
-            activitySignUp_editSurname.setHintTextColor(Color.RED)
+            activityLogIn_SignInSurname.setHintTextColor(Color.RED)
             androidWidgetToast("Surname must not be empty")
             return null
         }
 
         if (!emailValidatePattern.matcher(email).matches()) {
-            activitySignUp_editEmail.setHintTextColor(Color.RED)
-            activitySignUp_editEmail.setTextColor(Color.RED)
+            activityLogIn_SignInEmail.setHintTextColor(Color.RED)
+            activityLogIn_SignInEmail.setTextColor(Color.RED)
             androidWidgetToast("email template is email@sandbox.com")
             return null
         }
 
         if (password.isBlank()) {
-            activitySignUp_editPassword.setHintTextColor(Color.RED)
+            activityLogIn_SignInPassword.setHintTextColor(Color.RED)
             androidWidgetToast("Password must not be empty")
             return null
         }
@@ -81,17 +82,17 @@ class SignUp : AppCompatActivity() {
         )
     }
 
-    private fun androidWidgetToast(message: String?) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
     private fun setButtonInactive() {
-        activityLogIn_btnSignUp.isClickable = false
+        activityLogIn_btnSignIn.isClickable = false
     }
 
     private fun setButtonActive() {
-        activityLogIn_btnSignUp.isClickable = true
+        activityLogIn_btnSignIn.isClickable = true
     }
 
     companion object {
         private val emailValidatePattern = Pattern.compile("^[a-zA-Z0-9]{1,20}@[a-z]{1,20}\\.(ru|com|net)\$")
     }
+    private fun androidWidgetToast(message: String?) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
