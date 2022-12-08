@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".activity.MainActivity"
+                android:name=".activity.DialogActivity"
                 android:exported="true">
         </activity>
     </application>

@@ -8,12 +8,25 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.example.myapplication.R
-import com.example.myapplication.activity.MainActivity
+import com.example.myapplication.activity.DialogActivity
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
+import com.example.myapplication.dto.ResponseDto
 import com.example.myapplication.util.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_authorization.*
+import com.example.myapplication.util.operation.ListenableFuture
 import java.util.regex.Pattern
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginEmail
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginPassword
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInEmail
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInName
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInPassword
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInSurname
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_btnLogin
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_btnSignIn
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_logInLayout
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_singUpLayout
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_switcherLogIn
+import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_switcherSingUp
 
 class Authorization : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
@@ -62,10 +75,10 @@ class Authorization : AppCompatActivity() {
     private fun login(credentials: CustomerLogInInfoDto) {
         setButtonInactive()
         webSocket.logIn(credentials,
-            object : WebSocketResolver.ListenableFuture<Nothing?> {
-                override fun onSuccessful(result: Nothing?) {
+            object : ListenableFuture<ResponseDto> {
+                override fun onSuccessful(result: ResponseDto) {
                     username = credentials.login
-                    val intent = Intent(this@Authorization, MainActivity::class.java)
+                    val intent = Intent(this@Authorization, DialogActivity::class.java)
                     finish()
                     startActivity(intent)
                 }
@@ -85,10 +98,10 @@ class Authorization : AppCompatActivity() {
     private fun signUp(credentials: CustomerSignUpInfoDto) {
         setButtonInactive()
         webSocket.signUp(credentials,
-            object : WebSocketResolver.ListenableFuture<Nothing?> {
-                override fun onSuccessful(result: Nothing?) {
+            object : ListenableFuture<ResponseDto> {
+                override fun onSuccessful(result: ResponseDto) {
                     username = credentials.emailAddress
-                    val intent = Intent(this@Authorization, MainActivity::class.java)
+                    val intent = Intent(this@Authorization, DialogActivity::class.java)
                     finish()
                     startActivity(intent)
                 }

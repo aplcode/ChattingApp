@@ -13,6 +13,8 @@ import com.example.myapplication.util.getCurrentUsername
 class MessageAdapter(private val context: Context, private val messageList: List<MessageDto>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    private val currentUsername = getCurrentUsername()
+
     enum class ItemState {
         ITEM_RECEIVE,
         ITEM_SENT
@@ -43,8 +45,7 @@ class MessageAdapter(private val context: Context, private val messageList: List
 
     override fun getItemViewType(position: Int): Int {
         val currentMessage = messageList[position]
-        val username = getCurrentUsername()
-        return if (currentMessage.fromEmailAddress == username) {
+        return if (currentMessage.fromEmailAddress == currentUsername) {
             ItemState.ITEM_SENT.ordinal
         } else {
             ItemState.ITEM_RECEIVE.ordinal

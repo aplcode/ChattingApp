@@ -16,20 +16,21 @@ import com.example.myapplication.dto.DialogDto
 import com.example.myapplication.dto.UserDto
 import com.example.myapplication.util.WebSocketResolver
 import com.example.myapplication.util.getCurrentUsername
-import kotlinx.android.synthetic.main.activity_main.activityMain_btnStartNewDialog
-import kotlinx.android.synthetic.main.activity_main.activityMain_textBar
-import kotlinx.android.synthetic.main.activity_main.activityMain_userRecyclerView
+import com.example.myapplication.util.operation.ListenableFuture
+import kotlinx.android.synthetic.main.activity_dialog.activityDialog_btnStartNewDialog
+import kotlinx.android.synthetic.main.activity_dialog.activityDialog_textBar
+import kotlinx.android.synthetic.main.activity_dialog.activityDialog_userRecyclerView
 
-class MainActivity : AppCompatActivity() {
+class DialogActivity : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
 
     private val userList = mutableListOf<DialogDto>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_dialog)
 
-        activityMain_btnStartNewDialog.setOnClickListener {
+        activityDialog_btnStartNewDialog.setOnClickListener {
             val intent = Intent(this, ChatActivity::class.java)
             finish()
             startActivity(intent)
@@ -37,24 +38,24 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = DialogAdapter(this, userList)
 
-        activityMain_userRecyclerView.layoutManager = LinearLayoutManager(this)
-        activityMain_userRecyclerView.adapter = adapter
+        activityDialog_userRecyclerView.layoutManager = LinearLayoutManager(this)
+        activityDialog_userRecyclerView.adapter = adapter
 
         webSocket.getDialogs(
             UserDto(getCurrentUsername()),
-            object : WebSocketResolver.ListenableFuture<List<DialogDto>> {
+            object : ListenableFuture<List<DialogDto>> {
                 override fun onSuccessful(result: List<DialogDto>) {
                     Log.i(ContentValues.TAG, "Dialogs is gotten")
 
                     if (result.isEmpty()) {
-                        activityMain_textBar.text = "В данный момент у вас нет диалогов. Попробуйте начать новый!"
-                        activityMain_textBar.visibility = View.VISIBLE
+                        activityDialog_textBar.text = "В данный момент у вас нет диалогов. Попробуйте начать новый!"
+                        activityDialog_textBar.visibility = View.VISIBLE
                     } else {
                         Log.i(ContentValues.TAG, "Dialogs list size: [${result.size}]")
                         userList.addAll(result)
                     }
 
-                    adapter.notifyDataSetChanged()
+                    adapter.notifyItemRangeInserted(userList.lastIndex, result.size)
                 }
             })
     }

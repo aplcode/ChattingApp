@@ -5,10 +5,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activity.MainActivity">
+        tools:context=".activity.DialogActivity">
 
     <Button
-            android:id="@+id/activityMain_btnStartNewDialog"
+            android:id="@+id/activityDialog_btnStartNewDialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -21,16 +21,16 @@
             app:layout_constraintVertical_bias="0.0"
             tools:ignore="HardcodedText"/>
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/activityMain_userRecyclerView"
+            android:id="@+id/activityDialog_userRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBaseline_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="parent"
             tools:listitem="@layout/user_layout"
-            app:layout_constraintTop_toBottomOf="@+id/activityMain_btnStartNewDialog"/>
+            app:layout_constraintTop_toBottomOf="@+id/activityDialog_btnStartNewDialog"/>
     <TextView
-            android:id="@+id/activityMain_textBar"
+            android:id="@+id/activityDialog_textBar"
             android:layout_width="186dp"
             android:layout_height="116dp"
             android:visibility="invisible"
