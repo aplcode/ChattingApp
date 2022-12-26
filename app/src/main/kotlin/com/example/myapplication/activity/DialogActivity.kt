@@ -10,17 +10,19 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
+import com.example.myapplication.activity.authorization.Authorization
 import com.example.myapplication.adapters.DialogAdapter
-import com.example.myapplication.authorization.Authorization
 import com.example.myapplication.dto.DialogDto
 import com.example.myapplication.dto.UserDto
+import com.example.myapplication.util.factory.ResolverFactory
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
-import com.example.myapplication.util.socket.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_dialog.*
+import kotlinx.android.synthetic.main.activity_dialog.activityDialog_btnStartNewDialog
+import kotlinx.android.synthetic.main.activity_dialog.activityDialog_textBar
+import kotlinx.android.synthetic.main.activity_dialog.activityDialog_userRecyclerView
 
 class DialogActivity : AppCompatActivity() {
-    private val webSocket = WebSocketResolver.getInstance()
+    private val webSocket = ResolverFactory.instance.getImplResolver()
 
     private val userList = mutableListOf<DialogDto>()
 

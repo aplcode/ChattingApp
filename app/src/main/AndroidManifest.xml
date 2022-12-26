@@ -25,7 +25,7 @@
                 android:name=".activity.CreatingChatActivity"
                 android:exported="false"/>
         <activity
-                android:name=".authorization.Authorization"
+                android:name=".activity.authorization.Authorization"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

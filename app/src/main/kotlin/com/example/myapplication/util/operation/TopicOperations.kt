@@ -12,10 +12,11 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider
-import java.util.concurrent.atomic.AtomicBoolean
 
 class TopicOperations {
     private val stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
@@ -86,6 +87,7 @@ class TopicOperations {
         stompClient.topic(topicName)
             .subscribeOn(Schedulers.io(), false)
             .observeOn(AndroidSchedulers.mainThread())
+            .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .subscribe({
                 try {
                     Log.d(ContentValues.TAG, "Receive message from $topicName : [${it.payload}]")
@@ -101,6 +103,7 @@ class TopicOperations {
         stompClient.topic(topicName)
             .subscribeOn(Schedulers.io(), false)
             .observeOn(AndroidSchedulers.mainThread())
+            .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .subscribe({
                 try {
                     Log.d(ContentValues.TAG, "Receive message from $topicName : [${it.payload}]")
@@ -204,5 +207,7 @@ class TopicOperations {
 
         private const val PATH = "/api/v1/chat"
         private const val SOCKET_URL = "$WS_PROTOCOL$URL$PATH/websocket"
+
+        private const val TIMEOUT_SECONDS = 5L
     }
 }

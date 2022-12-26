@@ -1,6 +1,6 @@
 package com.example.myapplication.util
 
-import com.example.myapplication.authorization.Authorization
+import com.example.myapplication.activity.authorization.Authorization
 import com.example.myapplication.dto.DialogDto
 
 fun getCurrentUsername() =

@@ -9,14 +9,16 @@ import com.example.myapplication.R
 import com.example.myapplication.adapters.MessageAdapter
 import com.example.myapplication.dto.MessageDto
 import com.example.myapplication.dto.ResponseDto
+import com.example.myapplication.util.factory.ResolverFactory
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
-import com.example.myapplication.util.socket.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_chat.*
 import java.time.LocalDateTime
+import kotlinx.android.synthetic.main.activity_chat.activityChat_chatRecyclerView
+import kotlinx.android.synthetic.main.activity_chat.activityChat_messageBox
+import kotlinx.android.synthetic.main.activity_chat.activityChat_sendButton
 
 class ChatActivity : AppCompatActivity() {
-    private val webSocket = WebSocketResolver.getInstance()
+    private val webSocket = ResolverFactory.instance.getImplResolver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

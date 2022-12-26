@@ -9,14 +9,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
 import com.example.myapplication.adapters.UserAdapter
 import com.example.myapplication.dto.UserDto
+import com.example.myapplication.util.factory.ResolverFactory
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
-import com.example.myapplication.util.socket.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_select_user.*
+import kotlinx.android.synthetic.main.activity_select_user.activity_select_user_textBar
+import kotlinx.android.synthetic.main.activity_select_user.usersRecyclerView
 
 
 class CreatingChatActivity : AppCompatActivity() {
-    private val webSocket = WebSocketResolver.getInstance()
+    private val webSocket = ResolverFactory.instance.getImplResolver()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

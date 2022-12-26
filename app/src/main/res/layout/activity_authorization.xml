@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@drawable/background_login"
-        tools:context=".authorization.Authorization">
+        tools:context=".activity.authorization.Authorization">
 
         <ImageView
                 android:src="@drawable/chat"
@@ -89,7 +89,7 @@
 
 
                                 <com.google.android.material.textfield.TextInputLayout
-                                        android:hint="Email"
+                                        android:hint="Username"
                                         android:layout_marginLeft="5dp"
                                         android:layout_marginRight="5dp"
                                         android:layout_marginTop="5dp"
@@ -103,7 +103,7 @@
 
                                         <com.google.android.material.textfield.TextInputEditText
                                                 android:inputType="textEmailAddress"
-                                                android:id="@+id/activityAuthorization_LoginEmail"
+                                                android:id="@+id/activityAuthorization_LoginUsername"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -172,9 +172,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
 
-
                                 <com.google.android.material.textfield.TextInputLayout
-                                        android:hint="Email"
+                                        android:hint="Username"
                                         android:layout_marginLeft="5dp"
                                         android:layout_marginRight="5dp"
                                         android:layout_marginTop="5dp"
@@ -188,7 +187,7 @@
 
                                         <com.google.android.material.textfield.TextInputEditText
                                                 android:inputType="textEmailAddress"
-                                                android:id="@+id/activityAuthorization_SignInEmail"
+                                                android:id="@+id/activityAuthorization_SignInUsername"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
@@ -287,7 +286,7 @@
 
                                         <com.google.android.material.textfield.TextInputEditText
                                                 android:inputType="textPassword"
-                                                android:id="@+id/passwords01"
+                                                android:id="@+id/activityAuthorization_SignInConfirmPassword"
                                                 android:ems="10"
                                                 android:textSize="13sp"
                                                 android:textColor="@color/black"
