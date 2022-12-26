@@ -54,16 +54,30 @@ class OfflineResolver : Resolver {
         listener.onSuccessful(response)
     }
 
-    private fun randomString() = List(MESSAGE_LENGTH) { charPool.random() }.joinToString("")
-
+    private fun randomString() = List(MESSAGE_LENGTH) { charPool.random() }.joinToString("") + "\n#OFFLINE MODE"
 
     companion object {
         private val namePool = listOf(
-            "Liam", "Olivia", "Noah", "Emma",
-            "Oliver", "Charlotte", "Elijah", "Amelia",
-            "James", "Ava", "William", "Sophia",
-            "Benjamin", "Isabella", "Lucas", "Mia",
-            "Henry", "Evelyn", "Theodore", "Harper",
+            "OFFLINE Liam",
+            "MODE Olivia",
+            "OFFLINE Noah",
+            "MODE Emma",
+            "OFFLINE Oliver",
+            "MODE Charlotte",
+            "OFFLINE Elijah",
+            "MODE Amelia",
+            "OFFLINE James",
+            "MODE Ava",
+            "OFFLINE William",
+            "MODE Sophia",
+            "OFFLINE Benjamin",
+            "MODE Isabella",
+            "OFFLINE Lucas",
+            "MODE Mia",
+            "OFFLINE Henry",
+            "MODE Evelyn",
+            "OFFLINE Theodore",
+            "MODE Harper",
         )
 
         private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')

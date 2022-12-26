@@ -19,24 +19,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="5dp">
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp">
 
-            <EditText
-                    android:id="@+id/activityChat_messageBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:hint="Type a message"
-                    android:layout_marginLeft="10dp"
-                    android:paddingLeft="10dp"
-                    android:background="@drawable/message_box_background"
-                    android:layout_weight="85"/>
-            <ImageView
-                    android:id="@+id/activityChat_sendButton"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/send"
-                    android:layout_marginBottom="5dp"
-                    android:layout_weight="15"/>
+        <EditText
+                android:id="@+id/activityChat_messageBox"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:hint="Type a message"
+                android:layout_marginLeft="10dp"
+                android:paddingLeft="10dp"
+                android:background="@drawable/message_box_background"
+                android:layout_weight="85"/>
+        <ImageView
+                android:id="@+id/activityChat_sendButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/send"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="15"/>
 
     </LinearLayout>
 </RelativeLayout>
