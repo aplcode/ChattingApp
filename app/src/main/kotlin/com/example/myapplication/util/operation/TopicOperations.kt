@@ -5,16 +5,17 @@ import android.util.Log
 import com.example.myapplication.dto.DialogDto
 import com.example.myapplication.dto.MessageDto
 import com.example.myapplication.dto.ResponseDto
+import com.example.myapplication.dto.UserDto
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.atomic.AtomicBoolean
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider
+import java.util.concurrent.atomic.AtomicBoolean
 
 class TopicOperations {
     private val stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
@@ -118,10 +119,21 @@ class TopicOperations {
                 }
             }, listener::onException)
 
+
+    fun topicListenerUserDto(
+        temporaryTopicPath: String,
+        listener: ListenableFuture<List<UserDto>>,
+    ) {
+        initConnection()
+
+        resetTemporarySubscriptions()
+        compositeDisposable.add(subscribe(getTopicUrlPersonalToken(temporaryTopicPath), listener))
+    }
+
     private fun webSocketSend(url: String, data: Any) =
         sendCompletable(stompClient.send(url, mapper.writeValueAsString(data)))
 
-    fun webSocketSendPersonalToken(url: String, data: Any) =
+    fun webSocketSendPersonalToken(url: String, data: Any?) =
         sendCompletable(stompClient.send(getWebSocketUrlPersonalToken(url), mapper.writeValueAsString(data)))
 
     private fun sendCompletable(request: Completable) {

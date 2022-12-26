@@ -1,11 +1,6 @@
 package com.example.myapplication.util
 
-import com.example.myapplication.dto.CustomerLogInInfoDto
-import com.example.myapplication.dto.CustomerSignUpInfoDto
-import com.example.myapplication.dto.DialogDto
-import com.example.myapplication.dto.MessageDto
-import com.example.myapplication.dto.ResponseDto
-import com.example.myapplication.dto.UserDto
+import com.example.myapplication.dto.*
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.operation.TopicOperations
 
@@ -39,6 +34,15 @@ class WebSocketResolver private constructor() {
         topicOperations.topicListenerDialogDto("getDialogs", "getNewDialog", listener)
         topicOperations.webSocketSendPersonalToken(getDialogsLinkSocket, user)
     }
+    fun getUsers(
+        listener: ListenableFuture<List<UserDto>>,
+
+        ) {
+        topicOperations.topicListenerUserDto("getUsers", listener)
+        topicOperations.webSocketSendPersonalToken(getUsersLinkSocket, null)
+    }
+
+
 
     fun getMessageHistory(
         users: Pair<String, String>,
@@ -71,5 +75,6 @@ class WebSocketResolver private constructor() {
         private const val getDialogsLinkSocket = "$PATH/getDialogs/?token="
         private const val getMessagesLinkSocket = "$PATH/getMessages/?token="
         private const val sendMessageLinkSocket = "$PATH/sendMessage/?token="
+        private const val getUsersLinkSocket = "$PATH/getUsers/?token="
     }
 }
