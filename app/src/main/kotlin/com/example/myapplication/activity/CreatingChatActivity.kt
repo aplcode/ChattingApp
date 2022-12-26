@@ -9,10 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
 import com.example.myapplication.adapters.UserAdapter
 import com.example.myapplication.dto.UserDto
-import com.example.myapplication.util.WebSocketResolver
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
-import kotlinx.android.synthetic.main.activity_select_user.*
+import com.example.myapplication.util.socket.WebSocketResolver
+import kotlinx.android.synthetic.main.activity_select_user.activity_select_user_textBar
+import kotlinx.android.synthetic.main.activity_select_user.usersRecyclerView
 
 
 class CreatingChatActivity : AppCompatActivity() {

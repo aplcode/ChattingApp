@@ -1,13 +1,19 @@
-package com.example.myapplication.util
+package com.example.myapplication.util.socket
 
-import com.example.myapplication.dto.*
+import com.example.myapplication.dto.CustomerLogInInfoDto
+import com.example.myapplication.dto.CustomerSignUpInfoDto
+import com.example.myapplication.dto.DialogDto
+import com.example.myapplication.dto.MessageDto
+import com.example.myapplication.dto.ResponseDto
+import com.example.myapplication.dto.UserDto
+import com.example.myapplication.util.SessionContext
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.operation.TopicOperations
 
-class WebSocketResolver private constructor() {
+class WebSocketResolver private constructor(): Resolver {
     private val topicOperations = TopicOperations()
 
-    fun logIn(
+    override fun logIn(
         credentials: CustomerLogInInfoDto,
         listener: ListenableFuture<ResponseDto>,
     ) = topicOperations.authorizationListenTopicAndSend(
@@ -17,7 +23,7 @@ class WebSocketResolver private constructor() {
         listener
     )
 
-    fun signUp(
+    override fun signUp(
         credentials: CustomerSignUpInfoDto,
         listener: ListenableFuture<ResponseDto>,
     ) = topicOperations.authorizationListenTopicAndSend(
@@ -27,14 +33,14 @@ class WebSocketResolver private constructor() {
         listener
     )
 
-    fun getDialogs(
+    override fun getDialogs(
         user: UserDto,
         listener: ListenableFuture<List<DialogDto>>,
     ) {
         topicOperations.topicListenerDialogDto("getDialogs", "getNewDialog", listener)
         topicOperations.webSocketSendPersonalToken(getDialogsLinkSocket, user)
     }
-    fun getUsers(
+    override fun getUsers(
         listener: ListenableFuture<List<UserDto>>,
 
         ) {
@@ -44,7 +50,7 @@ class WebSocketResolver private constructor() {
 
 
 
-    fun getMessageHistory(
+    override fun getMessageHistory(
         users: Pair<String, String>,
         listener: ListenableFuture<List<MessageDto>>,
     ) {
@@ -52,7 +58,7 @@ class WebSocketResolver private constructor() {
         topicOperations.webSocketSendPersonalToken(getMessagesLinkSocket, users)
     }
 
-    fun sendMessage(
+    override fun sendMessage(
         dto: MessageDto,
         listener: ListenableFuture<ResponseDto>,
     ) {

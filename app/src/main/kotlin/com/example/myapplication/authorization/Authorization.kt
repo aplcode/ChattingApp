@@ -12,8 +12,8 @@ import com.example.myapplication.activity.DialogActivity
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.dto.ResponseDto
-import com.example.myapplication.util.WebSocketResolver
 import com.example.myapplication.util.operation.ListenableFuture
+import com.example.myapplication.util.socket.WebSocketResolver
 import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginEmail
 import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginPassword

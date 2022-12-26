@@ -14,9 +14,9 @@ import com.example.myapplication.adapters.DialogAdapter
 import com.example.myapplication.authorization.Authorization
 import com.example.myapplication.dto.DialogDto
 import com.example.myapplication.dto.UserDto
-import com.example.myapplication.util.WebSocketResolver
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
+import com.example.myapplication.util.socket.WebSocketResolver
 import kotlinx.android.synthetic.main.activity_dialog.activityDialog_btnStartNewDialog
 import kotlinx.android.synthetic.main.activity_dialog.activityDialog_textBar
 import kotlinx.android.synthetic.main.activity_dialog.activityDialog_userRecyclerView
