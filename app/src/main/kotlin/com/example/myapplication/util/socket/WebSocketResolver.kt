@@ -48,8 +48,6 @@ class WebSocketResolver private constructor(): Resolver {
         topicOperations.webSocketSendPersonalToken(getUsersLinkSocket, null)
     }
 
-
-
     override fun getMessageHistory(
         users: Pair<String, String>,
         listener: ListenableFuture<List<MessageDto>>,
