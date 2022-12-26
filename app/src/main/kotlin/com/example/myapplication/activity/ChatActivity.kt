@@ -12,12 +12,10 @@ import com.example.myapplication.dto.ResponseDto
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.socket.WebSocketResolver
+import kotlinx.android.synthetic.main.activity_chat.*
 import java.time.LocalDateTime
-import kotlinx.android.synthetic.main.activity_chat.activityChat_chatRecyclerView
-import kotlinx.android.synthetic.main.activity_chat.activityChat_messageBox
-import kotlinx.android.synthetic.main.activity_chat.activityChat_sendButton
 
-open class ChatActivity : AppCompatActivity() {
+class ChatActivity : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +43,7 @@ open class ChatActivity : AppCompatActivity() {
                     } else {
                         Log.i(ContentValues.TAG, "Message history size: [${result.size}]")
                         messageList.addAll(result)
+                        activityChat_chatRecyclerView.smoothScrollToPosition(messageList.size - 1)
                     }
 
                     messageAdapter.notifyItemRangeInserted(messageList.lastIndex, result.size)
@@ -62,6 +61,7 @@ open class ChatActivity : AppCompatActivity() {
                     if (result.status == 0) {
                         messageList.add(messageDto)
                         messageAdapter.notifyItemInserted(messageList.lastIndex)
+                        activityChat_chatRecyclerView.smoothScrollToPosition(messageList.size - 1)
                     } else {
                         onUnsuccessful()
                     }
@@ -70,6 +70,7 @@ open class ChatActivity : AppCompatActivity() {
 
             activityChat_messageBox.setText("")
         }
+
     }
 
     private fun getPartnerUsernameFromContext() =

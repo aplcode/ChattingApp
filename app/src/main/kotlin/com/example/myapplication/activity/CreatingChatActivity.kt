@@ -12,19 +12,18 @@ import com.example.myapplication.dto.UserDto
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.socket.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_select_user.activity_select_user_textBar
-import kotlinx.android.synthetic.main.activity_select_user.usersRecyclerView
+import kotlinx.android.synthetic.main.activity_select_user.*
 
 
 class CreatingChatActivity : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
-    private val userList = mutableListOf<UserDto>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_user)
 
+        val userList = mutableListOf<UserDto>()
         val userAdapter = UserAdapter(this, userList)
 
         usersRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -42,7 +41,9 @@ class CreatingChatActivity : AppCompatActivity() {
                         userList.addAll(result.filter { user -> user.username != getCurrentUsername() })
                     }
 
+
                     userAdapter.notifyItemRangeInserted(userList.size, result.size)
+
                     Log.i(ContentValues.TAG, "Users are got")
 
                 }

@@ -18,7 +18,9 @@
             tools:targetApi="33" tools:ignore="ObsoleteSdkInt">
         <activity
                 android:name=".activity.ChatActivity"
-                android:exported="false"/>
+                android:exported="false"
+                android:windowSoftInputMode="adjustPan"
+                android:fitsSystemWindows="true"/>
         <activity
                 android:name=".activity.CreatingChatActivity"
                 android:exported="false"/>

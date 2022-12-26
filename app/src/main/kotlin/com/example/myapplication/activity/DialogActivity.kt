@@ -17,9 +17,7 @@ import com.example.myapplication.dto.UserDto
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.socket.WebSocketResolver
-import kotlinx.android.synthetic.main.activity_dialog.activityDialog_btnStartNewDialog
-import kotlinx.android.synthetic.main.activity_dialog.activityDialog_textBar
-import kotlinx.android.synthetic.main.activity_dialog.activityDialog_userRecyclerView
+import kotlinx.android.synthetic.main.activity_dialog.*
 
 class DialogActivity : AppCompatActivity() {
     private val webSocket = WebSocketResolver.getInstance()
@@ -31,8 +29,7 @@ class DialogActivity : AppCompatActivity() {
         setContentView(R.layout.activity_dialog)
 
         activityDialog_btnStartNewDialog.setOnClickListener {
-            val intent = Intent(this, ChatActivity::class.java)
-            finish()
+            val intent = Intent(this, CreatingChatActivity::class.java)
             startActivity(intent)
         }
 
