@@ -26,7 +26,7 @@ class DialogAdapter(private val context: Context, private val userList: List<Dia
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         val dialogDto = userList[position]
 
-        val partnerUsername = dialogDto.getPartner(currentUsername)
+        val partnerUsername = dialogDto.getPartner(currentUsername).cutIfLong()
 
         holder.textName.text = partnerUsername
         holder.itemView.setOnClickListener {
@@ -39,4 +39,11 @@ class DialogAdapter(private val context: Context, private val userList: List<Dia
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textName: TextView = itemView.findViewById(R.id.txt_name)
     }
+
+    private fun String.cutIfLong(): String =
+        if (this.length > 14) {
+            this.substring(0..14) + "..."
+        } else {
+            this
+        }
 }

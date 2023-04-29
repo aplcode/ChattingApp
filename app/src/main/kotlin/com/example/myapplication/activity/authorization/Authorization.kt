@@ -5,6 +5,9 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
@@ -13,22 +16,27 @@ import com.example.myapplication.activity.DialogActivity
 import com.example.myapplication.dto.CustomerLogInInfoDto
 import com.example.myapplication.dto.CustomerSignUpInfoDto
 import com.example.myapplication.dto.ResponseDto
+import com.example.myapplication.util.SessionContext
 import com.example.myapplication.util.factory.ResolverFactory
+import com.example.myapplication.util.getTime
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.socket.Resolver
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginPassword
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginUsername
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInConfirmPassword
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInName
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInPassword
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInSurname
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInUsername
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_btnLogin
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_btnSignIn
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_logInLayout
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_singUpLayout
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_switcherLogIn
-import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_switcherSingUp
+import com.google.android.material.textfield.TextInputEditText
+import java.io.File
+
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginPassword
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_LoginUsername
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInConfirmPassword
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInName
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInPassword
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInSurname
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_SignInUsername
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_btnLogin
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_btnSignIn
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_logInLayout
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_singUpLayout
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_switcherLogIn
+//import kotlinx.android.synthetic.main.activity_authorization.activityAuthorization_switcherSingUp
 
 class Authorization : AppCompatActivity() {
     private val webSocket: Resolver = ResolverFactory.instance.getImplResolver()
@@ -38,6 +46,11 @@ class Authorization : AppCompatActivity() {
         setContentView(R.layout.activity_authorization)
 
         supportActionBar?.hide()
+
+        val activityAuthorization_switcherSingUp = findViewById<TextView>(R.id.activityAuthorization_switcherSingUp)
+        val activityAuthorization_switcherLogIn = findViewById<TextView>(R.id.activityAuthorization_switcherLogIn)
+        val activityAuthorization_singUpLayout = findViewById<LinearLayout>(R.id.activityAuthorization_singUpLayout)
+        val activityAuthorization_logInLayout = findViewById<LinearLayout>(R.id.activityAuthorization_logInLayout)
 
         activityAuthorization_switcherSingUp.setOnClickListener {
             activityAuthorization_switcherSingUp.background =
@@ -59,6 +72,7 @@ class Authorization : AppCompatActivity() {
             activityAuthorization_switcherLogIn.setTextColor(resources.getColor(R.color.textColor, null))
         }
 
+        val activityAuthorization_btnLogin = findViewById<Button>(R.id.activityAuthorization_btnLogin)
         activityAuthorization_btnLogin.setOnClickListener {
             val credentialsLogIn = getCredentialsLogIn()
             if (credentialsLogIn != null) {
@@ -66,6 +80,7 @@ class Authorization : AppCompatActivity() {
             }
         }
 
+        val activityAuthorization_btnSignIn = findViewById<Button>(R.id.activityAuthorization_btnSignIn)
         activityAuthorization_btnSignIn.setOnClickListener {
             val credentialsSignUp = getCredentialsSignUp()
             if (credentialsSignUp != null) {
@@ -80,6 +95,9 @@ class Authorization : AppCompatActivity() {
             object : ListenableFuture<ResponseDto> {
                 override fun onSuccessful(result: ResponseDto) {
                     username = credentials.login
+                    val file = File(cacheDir.path + "/file1")
+                    file.writeText("${getTime()}#${SessionContext.CurrentSession.id}#$username")
+
                     val intent = Intent(this@Authorization, DialogActivity::class.java)
                     finish()
                     startActivity(intent)
@@ -125,6 +143,10 @@ class Authorization : AppCompatActivity() {
     }
 
     private fun getCredentialsLogIn(): CustomerLogInInfoDto? {
+
+        val activityAuthorization_LoginUsername = findViewById<TextInputEditText>(R.id.activityAuthorization_LoginUsername)
+        val activityAuthorization_LoginPassword = findViewById<TextInputEditText>(R.id.activityAuthorization_LoginPassword)
+
         val email = activityAuthorization_LoginUsername.text.toString()
         val password = activityAuthorization_LoginPassword.text.toString()
 
@@ -147,6 +169,12 @@ class Authorization : AppCompatActivity() {
     }
 
     private fun getCredentialsSignUp(): CustomerSignUpInfoDto? {
+        val activityAuthorization_SignInName = findViewById<TextInputEditText>(R.id.activityAuthorization_SignInName)
+        val activityAuthorization_SignInSurname = findViewById<TextInputEditText>(R.id.activityAuthorization_SignInSurname)
+        val activityAuthorization_SignInUsername = findViewById<TextInputEditText>(R.id.activityAuthorization_SignInUsername)
+        val activityAuthorization_SignInPassword = findViewById<TextInputEditText>(R.id.activityAuthorization_SignInPassword)
+        val activityAuthorization_SignInConfirmPassword = findViewById<TextInputEditText>(R.id.activityAuthorization_SignInConfirmPassword)
+
         val name = activityAuthorization_SignInName.text.toString()
         val surname = activityAuthorization_SignInSurname.text.toString()
         val username = activityAuthorization_SignInUsername.text.toString()
@@ -193,11 +221,17 @@ class Authorization : AppCompatActivity() {
     }
 
     private fun setButtonInactive() {
+        val activityAuthorization_btnSignIn = findViewById<Button>(R.id.activityAuthorization_btnSignIn)
+        val activityAuthorization_btnLogin = findViewById<Button>(R.id.activityAuthorization_btnLogin)
+
         activityAuthorization_btnSignIn.isClickable = false
         activityAuthorization_btnLogin.isClickable = false
     }
 
     private fun setButtonActive() {
+        val activityAuthorization_btnSignIn = findViewById<Button>(R.id.activityAuthorization_btnSignIn)
+        val activityAuthorization_btnLogin = findViewById<Button>(R.id.activityAuthorization_btnLogin)
+
         activityAuthorization_btnSignIn.isClickable = true
         activityAuthorization_btnLogin.isClickable = true
     }

@@ -2,24 +2,76 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="5dp">
 
-        <RelativeLayout
+    <RelativeLayout
+            android:id="@+id/messageBox"
+            android:background="@drawable/btn_background"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="30dp">
+
+        <TextView
+                android:id="@+id/send_txtSentMessageBox"
                 android:layout_width="wrap_content"
-                android:background="@drawable/btn_background"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
+                android:layout_height="wrap_content"
+                android:text="@string/thisIsSentMessageExample"
+                android:textColor="@color/black"
+                android:padding="8dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="4dp"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-light"
+                android:minWidth="60dp">
+        </TextView>
+    </RelativeLayout>
+    <LinearLayout
+            android:layout_width="45dp"
+            android:layout_height="13dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/messageBox">
+
+        <TextView
+                android:id="@+id/send_timestamp"
+                android:text="@string/sentMessageTimestampExample"
+                android:textColor="@color/black"
+                android:layout_width="35dp"
+                android:layout_height="match_parent"
+                android:textAlignment="center"
+                android:textSize="11sp"
+                android:padding="0dp"
+                android:fontFamily="sans-serif-light">
+        </TextView>
+        <RelativeLayout
+                android:layout_marginTop="3dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-
-                <TextView
-                        android:id="@+id/send_txtSentMessageBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="This is sent message"
-                        android:textColor="@color/white"
-                        android:padding="10dp"
-                        android:textSize="18sp"/>
+            <ImageView
+                    android:id="@+id/messageStatusIndicatorSending"
+                    android:src="@drawable/message_status_indicator_sending"
+                    android:contentDescription="@string/imageContentDescription"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:visibility="visible"
+            />
+            <ImageView
+                    android:id="@+id/messageStatusIndicatorUnread"
+                    android:src="@drawable/message_status_indicator_unread"
+                    android:contentDescription="@string/imageContentDescription"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:visibility="invisible"
+            />
+            <ImageView
+                    android:id="@+id/messageStatusIndicatorRead"
+                    android:src="@drawable/message_status_indicator_read"
+                    android:contentDescription="@string/imageContentDescription"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:visibility="invisible"
+            />
         </RelativeLayout>
-
+    </LinearLayout>
 </RelativeLayout>

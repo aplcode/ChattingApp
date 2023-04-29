@@ -4,10 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.dto.MessageDto
+import com.example.myapplication.dto.MessageDto.MessageStatus.*
 import com.example.myapplication.util.getCurrentUsername
 
 class MessageAdapter(private val context: Context, private val messageList: List<MessageDto>) :
@@ -16,15 +18,14 @@ class MessageAdapter(private val context: Context, private val messageList: List
     private val currentUsername = getCurrentUsername()
 
     enum class ItemState {
-        ITEM_RECEIVE,
-        ITEM_SENT
+        ITEM_RECEIVE, ITEM_SENT
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == 1) {
-            ReceiveViewHolder(LayoutInflater.from(context).inflate(R.layout.receive, parent, false))
-        } else {
             SentViewHolder(LayoutInflater.from(context).inflate(R.layout.sent, parent, false))
+        } else {
+            ReceiveViewHolder(LayoutInflater.from(context).inflate(R.layout.receive, parent, false))
         }
     }
 
@@ -35,6 +36,13 @@ class MessageAdapter(private val context: Context, private val messageList: List
         when (holder) {
             is SentViewHolder -> {
                 holder.sentMessage.text = currentMessage.text
+                holder.messageTimestamp.text = currentMessage.timestamp
+                when (currentMessage.status) {
+                    UNREAD -> holder.setIndicatorUnread()
+                    SENDING -> holder.setIndicatorSending()
+                    READ -> holder.setIndicatorRead()
+                    else -> holder.setIndicatorSending()
+                }
             }
 
             is ReceiveViewHolder -> {
@@ -54,6 +62,28 @@ class MessageAdapter(private val context: Context, private val messageList: List
 
     class SentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val sentMessage: TextView = itemView.findViewById(R.id.send_txtSentMessageBox)
+        val messageTimestamp: TextView = itemView.findViewById(R.id.send_timestamp)
+        private val messageStatusIndicatorSending: ImageView = itemView.findViewById(R.id.messageStatusIndicatorSending)
+        private val messageStatusIndicatorUnread: ImageView = itemView.findViewById(R.id.messageStatusIndicatorUnread)
+        private val messageStatusIndicatorRead: ImageView = itemView.findViewById(R.id.messageStatusIndicatorRead)
+
+        fun setIndicatorSending() {
+            messageStatusIndicatorUnread.visibility = View.INVISIBLE
+            messageStatusIndicatorRead.visibility = View.INVISIBLE
+            messageStatusIndicatorSending.visibility = View.VISIBLE
+        }
+
+        fun setIndicatorUnread() {
+            messageStatusIndicatorUnread.visibility = View.VISIBLE
+            messageStatusIndicatorRead.visibility = View.INVISIBLE
+            messageStatusIndicatorSending.visibility = View.INVISIBLE
+        }
+
+        fun setIndicatorRead() {
+            messageStatusIndicatorUnread.visibility = View.INVISIBLE
+            messageStatusIndicatorRead.visibility = View.VISIBLE
+            messageStatusIndicatorSending.visibility = View.INVISIBLE
+        }
     }
 
     class ReceiveViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

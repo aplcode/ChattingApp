@@ -10,4 +10,10 @@
     <color name="green">#008000</color>
     <color name="textColor">#ECE5EC</color>
     <color name="pinkColor">#FF003B</color>
+
+    <color name="inputMessageBoxBorder">#18B7C3</color>
+
+    <color name="messageStatusIndicatorSending">#FFFFFFFF</color>
+    <color name="messageStatusIndicatorUnread">#FFEB3B</color>
+    <color name="messageStatusIndicatorRead">#00FF00</color>
 </resources>

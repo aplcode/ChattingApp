@@ -6,9 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.activity.authorization.Authorization
 import com.example.myapplication.adapters.DialogAdapter
@@ -17,9 +18,10 @@ import com.example.myapplication.dto.UserDto
 import com.example.myapplication.util.factory.ResolverFactory
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
-import kotlinx.android.synthetic.main.activity_dialog.activityDialog_btnStartNewDialog
-import kotlinx.android.synthetic.main.activity_dialog.activityDialog_textBar
-import kotlinx.android.synthetic.main.activity_dialog.activityDialog_userRecyclerView
+
+//import kotlinx.android.synthetic.main.activity_dialog.activityDialog_btnStartNewDialog
+//import kotlinx.android.synthetic.main.activity_dialog.activityDialog_textBar
+//import kotlinx.android.synthetic.main.activity_dialog.activityDialog_userRecyclerView
 
 class DialogActivity : AppCompatActivity() {
     private val webSocket = ResolverFactory.instance.getImplResolver()
@@ -30,12 +32,16 @@ class DialogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dialog)
 
+        val activityDialog_btnStartNewDialog = findViewById<Button>(R.id.activityDialog_btnStartNewDialog)
+
         activityDialog_btnStartNewDialog.setOnClickListener {
             val intent = Intent(this, CreatingChatActivity::class.java)
             startActivity(intent)
         }
 
         val adapter = DialogAdapter(this, userList)
+
+        val activityDialog_userRecyclerView = findViewById<RecyclerView>(R.id.activityDialog_userRecyclerView)
 
         activityDialog_userRecyclerView.layoutManager = LinearLayoutManager(this)
         activityDialog_userRecyclerView.adapter = adapter
@@ -46,10 +52,7 @@ class DialogActivity : AppCompatActivity() {
                 override fun onSuccessful(result: List<DialogDto>) {
                     Log.i(ContentValues.TAG, "Dialogs is gotten")
 
-                    if (result.isEmpty()) {
-                        activityDialog_textBar.text = "В данный момент у вас нет диалогов. Попробуйте начать новый!"
-                        activityDialog_textBar.visibility = View.VISIBLE
-                    } else {
+                    if (result.isNotEmpty()) {
                         Log.i(ContentValues.TAG, "Dialogs list size: [${result.size}]")
                         userList.addAll(result)
                     }

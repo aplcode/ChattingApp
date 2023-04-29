@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".activity.ChatActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -26,18 +26,22 @@
                 android:id="@+id/activityChat_messageBox"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:hint="Type a message"
-                android:layout_marginLeft="10dp"
-                android:paddingLeft="10dp"
+                android:hint="@string/typeMessageButton"
+                android:layout_marginStart="10dp"
+                android:paddingStart="10dp"
                 android:background="@drawable/message_box_background"
-                android:layout_weight="85"/>
+                android:layout_weight="85"
+                android:autofillHints="@string/typeMessageButton"
+                android:inputType="text"
+                android:textColorHint="#851C2020"
+                tools:ignore="RtlSymmetry"/>
         <ImageView
                 android:id="@+id/activityChat_sendButton"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/send"
+                android:src="@drawable/send_message_icon"
                 android:layout_marginBottom="5dp"
-                android:layout_weight="15"/>
-
+                android:layout_weight="15"
+                android:contentDescription="@string/imageContentDescription"/>
     </LinearLayout>
 </RelativeLayout>

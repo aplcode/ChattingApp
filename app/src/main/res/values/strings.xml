@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="usernameEmptyField">username</string>
+    <string name="startNewDialogButton">Start new dialog</string>
+    <string name="singUpSwitcher">Sing Up</string>
+    <string name="enterUsernameField">Username</string>
+    <string name="enterPasswordField">Password</string>
+    <string name="forgetPasswordButton">Forget Password?</string>
+    <string name="logInButton">Log In</string>
+    <string name="logInSwitcher">Log In</string>
+    <string name="enterNameField">Name</string>
+    <string name="enterSurnameField">Surname</string>
+    <string name="enterConfirmPasswordField">Confirm Password</string>
+    <string name="signInButton">Sign In</string>
+    <string name="imageContentDescription">Image</string>
+    <string name="thisIsSentMessageExample">This is sent message</string>
+    <string name="thisIsReceiveMessageExample">This is receive message</string>
+    <string name="typeMessageButton">Write a message</string>
+    <string name="sentMessageTimestampExample">12:30</string>
+    <string name="selectUserNewDialogBox">Select User</string>
+    <string name="startEnterUsernameBox">Start enter username</string>
 </resources>

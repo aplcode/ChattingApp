@@ -2,22 +2,45 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="5dp">
 
     <RelativeLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/messageBox"
             android:background="@drawable/edt_background"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
         <TextView
                 android:id="@+id/receive_txtReceiveMessageBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="This is receive message"
-                android:padding="10dp"
-                android:textSize="18sp"/>
+                android:text="@string/thisIsReceiveMessageExample"
+                android:textColor="@color/black"
+                android:padding="8dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="4dp"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-light"
+                android:minWidth="60dp"
+        />
     </RelativeLayout>
+    <LinearLayout
+            android:layout_width="35dp"
+            android:layout_height="13dp"
+            android:layout_marginStart="10dp"
+            android:layout_alignBottom="@id/messageBox">
 
+        <TextView
+                android:id="@+id/send_timestamp"
+                android:text="@string/sentMessageTimestampExample"
+                android:textColor="@color/black"
+                android:layout_width="35dp"
+                android:layout_height="match_parent"
+                android:textAlignment="center"
+                android:textSize="11sp"
+                android:padding="0dp"
+                android:fontFamily="sans-serif-light">
+        </TextView>
+    </LinearLayout>
 </RelativeLayout>

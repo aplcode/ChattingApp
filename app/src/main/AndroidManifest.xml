@@ -3,7 +3,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           package="com.example.myapplication">
-  <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
             android:enableOnBackInvokedCallback="true"
             android:allowBackup="true"
@@ -19,11 +19,11 @@
         <activity
                 android:name=".activity.ChatActivity"
                 android:exported="false"
-                android:windowSoftInputMode="adjustPan"
-                android:fitsSystemWindows="true"/>
+                android:windowSoftInputMode="adjustPan"/>
         <activity
                 android:name=".activity.CreatingChatActivity"
-                android:exported="false"/>
+                android:exported="false"
+                android:windowSoftInputMode="adjustPan"/>
         <activity
                 android:name=".activity.authorization.Authorization"
                 android:exported="true">

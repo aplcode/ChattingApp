@@ -24,7 +24,6 @@ class UserAdapter (private val context: Context, private val userList: List<User
 
     override fun getItemCount() = userList.size
 
-
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         holder.textName.text = userList[position].username
         holder.itemView.setOnClickListener {
