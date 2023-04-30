@@ -67,6 +67,7 @@ class ChatActivity : AppCompatActivity() {
             }
 
             val messageDto = MessageDto(
+                id = null,
                 username,
                 partnerUsername,
                 message,

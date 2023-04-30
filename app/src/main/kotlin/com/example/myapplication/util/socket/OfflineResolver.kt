@@ -63,10 +63,10 @@ class OfflineResolver : Resolver {
         for (i in 1..numberOfMessages) {
             if (i % 3 == 0) list.add(
                 MessageDto(
-                    users.first, users.second, randomString(), getTime(), MessageDto.MessageStatus.READ
+                    id = null, users.first, users.second, randomString(), getTime(), MessageDto.MessageStatus.READ
                 )
             )
-            else list.add(MessageDto(users.second, users.first, randomString(), getTime()))
+            else list.add(MessageDto(id = null, users.second, users.first, randomString(), getTime(), MessageDto.MessageStatus.READ))
         }
 
         listener.onSuccessful(list)

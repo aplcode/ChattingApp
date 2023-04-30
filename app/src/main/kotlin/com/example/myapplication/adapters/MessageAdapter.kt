@@ -11,6 +11,8 @@ import com.example.myapplication.R
 import com.example.myapplication.dto.MessageDto
 import com.example.myapplication.dto.MessageDto.MessageStatus.*
 import com.example.myapplication.util.getCurrentUsername
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class MessageAdapter(private val context: Context, private val messageList: List<MessageDto>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -36,7 +38,7 @@ class MessageAdapter(private val context: Context, private val messageList: List
         when (holder) {
             is SentViewHolder -> {
                 holder.sentMessage.text = currentMessage.text
-                holder.messageTimestamp.text = currentMessage.timestamp
+                holder.messageTimestamp.text = currentMessage.timestamp.toTimestampString()
                 when (currentMessage.status) {
                     UNREAD -> holder.setIndicatorUnread()
                     SENDING -> holder.setIndicatorSending()
@@ -47,6 +49,10 @@ class MessageAdapter(private val context: Context, private val messageList: List
 
             is ReceiveViewHolder -> {
                 holder.receiveMessage.text = currentMessage.text
+                holder.messageTimestamp.text = currentMessage.timestamp.toTimestampString()
+                if (currentMessage.status == UNREAD) {
+                    sendReadCallback()
+                }
             }
         }
     }
@@ -88,5 +94,12 @@ class MessageAdapter(private val context: Context, private val messageList: List
 
     class ReceiveViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val receiveMessage: TextView = itemView.findViewById(R.id.receive_txtReceiveMessageBox)
+        val messageTimestamp: TextView = itemView.findViewById(R.id.receive_timestamp)
     }
+
+    private fun sendReadCallback() {
+        // TODO
+    }
+
+    private fun ZonedDateTime.toTimestampString() = toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")).toString()
 }

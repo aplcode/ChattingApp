@@ -32,7 +32,7 @@
             android:layout_alignBottom="@id/messageBox">
 
         <TextView
-                android:id="@+id/send_timestamp"
+                android:id="@+id/receive_timestamp"
                 android:text="@string/sentMessageTimestampExample"
                 android:textColor="@color/black"
                 android:layout_width="35dp"

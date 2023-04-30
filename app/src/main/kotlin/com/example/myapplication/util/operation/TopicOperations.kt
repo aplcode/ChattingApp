@@ -12,13 +12,13 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.dto.LifecycleEvent
 import ua.naiksoftware.stomp.provider.OkHttpConnectionProvider
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
-class TopicOperations {
+class TopicOperations : WebSocketOperations {
     private val stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, SOCKET_URL)
         .withServerHeartbeat(30000)
     private val mapper = jacksonObjectMapper()
@@ -29,7 +29,7 @@ class TopicOperations {
         initConnection()
     }
 
-    fun authorizationListenTopicAndSend(
+    override fun authorizationListenTopicAndSend(
         listenFrom: String, sendTo: String, data: Any,
         listener: ListenableFuture<ResponseDto>,
     ) {
@@ -38,15 +38,7 @@ class TopicOperations {
         webSocketSend(sendTo, data)
     }
 
-    private fun authorizationTopicListener(
-        topicName: String,
-        listener: ListenableFuture<ResponseDto>,
-    ) {
-        resetTemporarySubscriptions()
-        compositeDisposable.add(authSubscribe(topicName, listener))
-    }
-
-    fun topicListenerResponseDto(
+    override fun topicListenerResponseDto(
         personalTopicPath: String,
         listener: ListenableFuture<ResponseDto>,
     ) {
@@ -55,7 +47,7 @@ class TopicOperations {
         compositeDisposable.add(subscribe(getTopicUrlPersonalToken(personalTopicPath), listener))
     }
 
-    fun topicListenerDialogDto(
+    override fun topicListenerDialogDto(
         temporaryTopicPath: String,
         permanentlyTopicPath: String,
         listener: ListenableFuture<List<DialogDto>>,
@@ -69,7 +61,7 @@ class TopicOperations {
         compositeDisposableChats.add(subscribe(getTopicUrlPersonalToken(permanentlyTopicPath), listener))
     }
 
-    fun topicListenerMessageDto(
+    override fun topicListenerMessageDto(
         temporaryTopicPath: String,
         permanentlyTopicPath: String,
         listener: ListenableFuture<List<MessageDto>>,
@@ -82,6 +74,28 @@ class TopicOperations {
         resetChatSubscriptions()
         compositeDisposableChats.add(subscribe(getTopicUrlPersonalToken(permanentlyTopicPath), listener))
     }
+
+    override fun topicListenerUserDto(
+        temporaryTopicPath: String,
+        listener: ListenableFuture<List<UserDto>>,
+    ) {
+        initConnection()
+
+        resetTemporarySubscriptions()
+        compositeDisposable.add(subscribe(getTopicUrlPersonalToken(temporaryTopicPath), listener))
+    }
+
+    override fun webSocketSendPersonalToken(url: String, data: Any?) =
+        sendCompletable(stompClient.send(getWebSocketUrlPersonalToken(url), mapper.writeValueAsString(data)))
+
+    private fun authorizationTopicListener(
+        topicName: String,
+        listener: ListenableFuture<ResponseDto>,
+    ) {
+        resetTemporarySubscriptions()
+        compositeDisposable.add(authSubscribe(topicName, listener))
+    }
+
 
     private inline fun <reified T> subscribe(topicName: String, listener: ListenableFuture<T>) =
         stompClient.topic(topicName)
@@ -122,22 +136,8 @@ class TopicOperations {
                 }
             }, listener::onException)
 
-
-    fun topicListenerUserDto(
-        temporaryTopicPath: String,
-        listener: ListenableFuture<List<UserDto>>,
-    ) {
-        initConnection()
-
-        resetTemporarySubscriptions()
-        compositeDisposable.add(subscribe(getTopicUrlPersonalToken(temporaryTopicPath), listener))
-    }
-
     private fun webSocketSend(url: String, data: Any) =
         sendCompletable(stompClient.send(url, mapper.writeValueAsString(data)))
-
-    fun webSocketSendPersonalToken(url: String, data: Any?) =
-        sendCompletable(stompClient.send(getWebSocketUrlPersonalToken(url), mapper.writeValueAsString(data)))
 
     private fun sendCompletable(request: Completable) {
         val callback = request.subscribeOn(Schedulers.io())
