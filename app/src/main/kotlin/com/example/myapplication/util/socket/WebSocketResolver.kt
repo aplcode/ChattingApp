@@ -1,22 +1,18 @@
 package com.example.myapplication.util.socket
 
-import com.example.myapplication.dto.CustomerLogInInfoDto
-import com.example.myapplication.dto.CustomerSignUpInfoDto
-import com.example.myapplication.dto.DialogDto
-import com.example.myapplication.dto.MessageDto
-import com.example.myapplication.dto.ResponseDto
-import com.example.myapplication.dto.UserDto
+import com.example.myapplication.dto.*
 import com.example.myapplication.util.SessionContext
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.operation.TopicOperations
+import com.example.myapplication.util.operation.WebSocketOperations
 
 class WebSocketResolver private constructor(): Resolver {
-    private val topicOperations = TopicOperations()
+    private val webSocketOperations: WebSocketOperations = TopicOperations()
 
     override fun logIn(
         credentials: CustomerLogInInfoDto,
         listener: ListenableFuture<ResponseDto>,
-    ) = topicOperations.authorizationListenTopicAndSend(
+    ) = webSocketOperations.authorizationListenTopicAndSend(
         "$TOPIC_LINK_SOCKET/login",
         LOGIN_LINK_SOCKET,
         credentials,
@@ -26,7 +22,7 @@ class WebSocketResolver private constructor(): Resolver {
     override fun signUp(
         credentials: CustomerSignUpInfoDto,
         listener: ListenableFuture<ResponseDto>,
-    ) = topicOperations.authorizationListenTopicAndSend(
+    ) = webSocketOperations.authorizationListenTopicAndSend(
         "$TOPIC_LINK_SOCKET/signup",
         SIGNUP_LINK_SOCKET,
         credentials,
@@ -37,31 +33,31 @@ class WebSocketResolver private constructor(): Resolver {
         user: UserDto,
         listener: ListenableFuture<List<DialogDto>>,
     ) {
-        topicOperations.topicListenerDialogDto("getDialogs", "getNewDialog", listener)
-        topicOperations.webSocketSendPersonalToken(getDialogsLinkSocket, user)
+        webSocketOperations.topicListenerDialogDto("getDialogs", "getNewDialog", listener)
+        webSocketOperations.webSocketSendPersonalToken(getDialogsLinkSocket, user)
     }
     override fun getUsers(
         listener: ListenableFuture<List<UserDto>>,
 
         ) {
-        topicOperations.topicListenerUserDto("getUsers", listener)
-        topicOperations.webSocketSendPersonalToken(getUsersLinkSocket, null)
+        webSocketOperations.topicListenerUserDto("getUsers", listener)
+        webSocketOperations.webSocketSendPersonalToken(getUsersLinkSocket, null)
     }
 
     override fun getMessageHistory(
         users: Pair<String, String>,
         listener: ListenableFuture<List<MessageDto>>,
     ) {
-        topicOperations.topicListenerMessageDto("getMessages", "getNewMessage", listener)
-        topicOperations.webSocketSendPersonalToken(getMessagesLinkSocket, users)
+        webSocketOperations.topicListenerMessageDto("getMessages", "getNewMessage", listener)
+        webSocketOperations.webSocketSendPersonalToken(getMessagesLinkSocket, users)
     }
 
     override fun sendMessage(
         dto: MessageDto,
         listener: ListenableFuture<ResponseDto>,
     ) {
-        topicOperations.topicListenerResponseDto("sendMessage", listener)
-        topicOperations.webSocketSendPersonalToken(sendMessageLinkSocket, dto)
+        webSocketOperations.topicListenerResponseDto("sendMessage", listener)
+        webSocketOperations.webSocketSendPersonalToken(sendMessageLinkSocket, dto)
     }
 
     companion object {
