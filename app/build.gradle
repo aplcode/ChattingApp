@@ -61,10 +61,6 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     implementation("com.google.android.material:material:1.8.0")
-//    implementation("com.google.firebase:firebase-analytics-ktx")
-//    implementation("com.google.firebase:firebase-auth-ktx:21.3.0")
-//    implementation("com.google.firebase:firebase-database-ktx:20.2.0")
-//    implementation("com.google.firebase:firebase-crashlytics-buildtools:2.9.5")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.14.0")
@@ -75,8 +71,6 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
     implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.4")
-
-    implementation platform("com.google.firebase:firebase-bom:31.0.3")
 
     kapt("androidx.hilt:hilt-compiler:1.0.0")
     kapt("androidx.room:room-compiler:2.5.1")

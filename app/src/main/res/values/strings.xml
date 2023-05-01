@@ -19,4 +19,5 @@
     <string name="sentMessageTimestampExample">12:30</string>
     <string name="selectUserNewDialogBox">Select User</string>
     <string name="startEnterUsernameBox">Start enter username</string>
+    <string name="im_button_example">I</string>
 </resources>

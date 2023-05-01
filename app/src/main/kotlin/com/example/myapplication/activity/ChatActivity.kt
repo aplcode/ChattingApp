@@ -36,10 +36,10 @@ class ChatActivity : AppCompatActivity() {
 
         val messageAdapter = MessageAdapter(this, messageList)
 
-        val activityChat_chatRecyclerView = findViewById<RecyclerView>(R.id.activityChat_chatRecyclerView)
+        val chatRecyclerView: RecyclerView = findViewById(R.id.activityChat_chatRecyclerView)
 
-        activityChat_chatRecyclerView.layoutManager = LinearLayoutManager(this)
-        activityChat_chatRecyclerView.adapter = messageAdapter
+        chatRecyclerView.layoutManager = LinearLayoutManager(this)
+        chatRecyclerView.adapter = messageAdapter
 
         webSocket.getMessageHistory(username to partnerUsername,
             object : ListenableFuture<List<MessageDto>> {
@@ -51,17 +51,18 @@ class ChatActivity : AppCompatActivity() {
                     } else {
                         Log.i(ContentValues.TAG, "Message history size: [${result.size}]")
                         messageList.addAll(result)
-                        activityChat_chatRecyclerView.smoothScrollToPosition(messageList.size - 1)
+                        chatRecyclerView.smoothScrollToPosition(messageList.size - 1)
                     }
 
                     messageAdapter.notifyItemRangeInserted(messageList.lastIndex, result.size)
                 }
             })
 
-        val activityChat_sendButton = findViewById<ImageView>(R.id.activityChat_sendButton)
-        val activityChat_messageBox = findViewById<EditText>(R.id.activityChat_messageBox)
-        activityChat_sendButton.setOnClickListener {
-            val message = activityChat_messageBox.text.toString()
+        val sendButton: ImageView = findViewById(R.id.activityChat_sendButton)
+        val messageBox: EditText = findViewById(R.id.activityChat_messageBox)
+
+        sendButton.setOnClickListener {
+            val message = messageBox.text.toString()
             if (message.isBlank()) {
                 return@setOnClickListener
             }
@@ -78,7 +79,7 @@ class ChatActivity : AppCompatActivity() {
             val messagePosition = messageList.size + 1
             messageList.add(messageDto)
             messageAdapter.notifyItemInserted(messagePosition)
-            activityChat_chatRecyclerView.smoothScrollToPosition(messageList.size - 1)
+            chatRecyclerView.smoothScrollToPosition(messageList.size - 1)
 
             webSocket.sendMessage(messageDto,
                 object : ListenableFuture<ResponseDto> {
@@ -93,7 +94,7 @@ class ChatActivity : AppCompatActivity() {
                     }
                 })
 
-            activityChat_messageBox.setText("")
+            messageBox.setText("")
         }
     }
 
