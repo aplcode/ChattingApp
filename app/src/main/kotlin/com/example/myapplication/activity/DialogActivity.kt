@@ -19,10 +19,6 @@ import com.example.myapplication.util.factory.ResolverFactory
 import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.operation.ListenableFuture
 
-//import kotlinx.android.synthetic.main.activity_dialog.activityDialog_btnStartNewDialog
-//import kotlinx.android.synthetic.main.activity_dialog.activityDialog_textBar
-//import kotlinx.android.synthetic.main.activity_dialog.activityDialog_userRecyclerView
-
 class DialogActivity : AppCompatActivity() {
     private val webSocket = ResolverFactory.instance.getImplResolver()
 
@@ -32,19 +28,53 @@ class DialogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dialog)
 
-        val activityDialog_btnStartNewDialog = findViewById<Button>(R.id.activityDialog_btnStartNewDialog)
+        newDialogButtonSettingUp()
 
-        activityDialog_btnStartNewDialog.setOnClickListener {
+        imButtonSettingUp()
+
+        uploadDialogs()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.logout) {
+            finish()
+            startActivity(Intent(this, Authorization::class.java))
+        }
+
+        return true
+    }
+
+    private fun imButtonSettingUp() {
+        val imButton: Button = findViewById(R.id.imButton)
+        imButton.text = getCurrentUsername().first().toString()
+
+        imButton.setOnClickListener {
+            val intent = Intent(this, ImActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun newDialogButtonSettingUp() {
+        val startNewDialogButton: Button = findViewById(R.id.activityDialog_btnStartNewDialog)
+
+        startNewDialogButton.setOnClickListener {
             val intent = Intent(this, CreatingChatActivity::class.java)
             startActivity(intent)
         }
+    }
 
+    private fun uploadDialogs() {
         val adapter = DialogAdapter(this, userList)
 
-        val activityDialog_userRecyclerView = findViewById<RecyclerView>(R.id.activityDialog_userRecyclerView)
+        val activityDialogUsers: RecyclerView = findViewById(R.id.activityDialog_userRecyclerView)
 
-        activityDialog_userRecyclerView.layoutManager = LinearLayoutManager(this)
-        activityDialog_userRecyclerView.adapter = adapter
+        activityDialogUsers.layoutManager = LinearLayoutManager(this)
+        activityDialogUsers.adapter = adapter
 
         webSocket.getDialogs(
             UserDto(getCurrentUsername()),
@@ -60,19 +90,5 @@ class DialogActivity : AppCompatActivity() {
                     adapter.notifyItemRangeInserted(userList.lastIndex, result.size)
                 }
             })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.logout) {
-            finish()
-            startActivity(Intent(this, Authorization::class.java))
-        }
-
-        return true
     }
 }

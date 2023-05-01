@@ -36,5 +36,9 @@
                 android:name=".activity.DialogActivity"
                 android:exported="true">
         </activity>
+        <activity
+                android:name=".activity.ImActivity"
+                android:exported="true">
+        </activity>
     </application>
 </manifest>
