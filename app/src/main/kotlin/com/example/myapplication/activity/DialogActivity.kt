@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
@@ -50,7 +51,7 @@ class DialogActivity : AppCompatActivity() {
     }
 
     private fun imButtonSettingUp() {
-        val imButton: Button = findViewById(R.id.imButton)
+        val imButton: AppCompatButton = findViewById(R.id.imButton)
         imButton.text = getCurrentUsername().first().toString()
 
         imButton.setOnClickListener {

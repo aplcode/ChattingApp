@@ -35,13 +35,14 @@
             tools:listitem="@layout/user_layout"
             app:layout_constraintTop_toBottomOf="@+id/activityDialog_btnStartNewDialog"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/imButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/im_background_image"
             android:layout_marginEnd="30dp"
             android:clickable="true"
+            android:textAllCaps="true"
             android:text="@string/im_button_example"
             android:fontFamily="serif"
             android:textSize="21sp"

@@ -14,6 +14,7 @@
             android:background="@drawable/im_background_image"
             android:clickable="true"
             android:text="@string/im_button_example"
+            android:textAllCaps="true"
             android:fontFamily="serif"
             android:textSize="50sp"
             android:textAlignment="center"

@@ -19,7 +19,7 @@
     <string name="sentMessageTimestampExample">12:30</string>
     <string name="selectUserNewDialogBox">Select User</string>
     <string name="startEnterUsernameBox">Start enter username</string>
-    <string name="im_button_example">M</string>
+    <string name="im_button_example">m</string>
     <string name="username_example">musernameexample</string>
     <string name="change_password_text">Change password</string>
     <string name="log_out_text">Log out</string>
