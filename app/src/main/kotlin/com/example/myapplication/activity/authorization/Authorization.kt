@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -23,11 +24,21 @@ import com.example.myapplication.util.factory.ResolverFactory
 import com.example.myapplication.util.getTime
 import com.example.myapplication.util.operation.ListenableFuture
 import com.example.myapplication.util.socket.Resolver
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.textfield.TextInputEditText
+import java.io.FileReader
 import java.io.FileWriter
+import java.nio.file.Files
+import kotlin.io.path.Path
 
 class Authorization : AppCompatActivity() {
     private val webSocket: Resolver = ResolverFactory.instance.getImplResolver()
+
+    private val mapper = jacksonObjectMapper().apply {
+        registerModule(JavaTimeModule())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,11 +98,17 @@ class Authorization : AppCompatActivity() {
         }
     }
 
-    private fun getCacheFilePath() = cacheDir.path + "/fileLoggingCache"
+    private fun getCacheFilePath() = (cacheDir.path + LoginCache.FILE_PATH + LoginCache.FILE_NAME).also { Log.d(this::class.simpleName, "Cache login file [$it]") }
+
+    private fun getCacheLoginDirectoryPath() = Path(cacheDir.path + LoginCache.FILE_PATH)
 
     private fun setSessionIntoCacheFile(username: String) {
+        val loginCacheDirectory = getCacheLoginDirectoryPath()
+        if (!Files.isDirectory(loginCacheDirectory)) {
+            Files.createDirectory(loginCacheDirectory)
+        }
         FileWriter(getCacheFilePath(), true).use {
-            it.appendLine(getSessionInformation(username).toString())
+            it.appendLine(mapper.writeValueAsString(getSessionInformation(username)))
         }
     }
 
@@ -103,6 +120,7 @@ class Authorization : AppCompatActivity() {
                     username = credentials.login
 
                     setSessionIntoCacheFile(username)
+                    preprocessAllCache()
 
                     val intent = Intent(this@Authorization, DialogActivity::class.java)
                     finish()
@@ -123,6 +141,12 @@ class Authorization : AppCompatActivity() {
             })
     }
 
+    private fun preprocessAllCache() {
+        FileReader(getCacheFilePath()).use { reader ->
+            loginCache = LoginCache(reader.readLines().map<String, LoginCache.LoginInformation> { mapper.readValue(it) }.reversed())
+        }
+    }
+
     private fun signUp(credentials: CustomerSignUpInfoDto) {
         setButtonInactive()
         webSocket.signUp(credentials,
@@ -130,6 +154,10 @@ class Authorization : AppCompatActivity() {
                 override fun onSuccessful(result: ResponseDto) {
                     username = credentials.username
                     val intent = Intent(this@Authorization, DialogActivity::class.java)
+
+                    setSessionIntoCacheFile(username)
+                    preprocessAllCache()
+
                     finish()
                     startActivity(intent)
                 }
@@ -257,6 +285,9 @@ class Authorization : AppCompatActivity() {
 
     companion object {
         private lateinit var username: String
+        private lateinit var loginCache: LoginCache
+
+        fun getLoginCacheIsInit(): LoginCache? = if (this::loginCache.isInitialized) loginCache else null
 
         fun getUsernameIsInit(): String? = if (this::username.isInitialized) username else null
     }

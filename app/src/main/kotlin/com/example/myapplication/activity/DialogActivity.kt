@@ -80,7 +80,7 @@ class DialogActivity : AppCompatActivity() {
             UserDto(getCurrentUsername()),
             object : ListenableFuture<List<DialogDto>> {
                 override fun onSuccessful(result: List<DialogDto>) {
-                    Log.i(ContentValues.TAG, "Dialogs is gotten")
+                    Log.i(ContentValues.TAG, "Dialogs got")
 
                     if (result.isNotEmpty()) {
                         Log.i(ContentValues.TAG, "Dialogs list size: [${result.size}]")

@@ -19,5 +19,13 @@
     <string name="sentMessageTimestampExample">12:30</string>
     <string name="selectUserNewDialogBox">Select User</string>
     <string name="startEnterUsernameBox">Start enter username</string>
-    <string name="im_button_example">I</string>
+    <string name="im_button_example">M</string>
+    <string name="username_example">musernameexample</string>
+    <string name="change_password_text">Change password</string>
+    <string name="log_out_text">Log out</string>
+    <string name="clear_cache_text">Clear cache</string>
+    <string name="login_history_text">Login history</string>
+    <string name="time_login_example">2022–02–02 23:22:21</string>
+    <string name="phone_login_example">Phone: Google Pixel 6 Pro</string>
+    <string name="version_example">0.0.1</string>
 </resources>

@@ -17,10 +17,6 @@ import com.example.myapplication.util.getCurrentUsername
 import com.example.myapplication.util.getTime
 import com.example.myapplication.util.operation.ListenableFuture
 
-//import kotlinx.android.synthetic.main.activity_chat.activityChat_chatRecyclerView
-//import kotlinx.android.synthetic.main.activity_chat.activityChat_messageBox
-//import kotlinx.android.synthetic.main.activity_chat.activityChat_sendButton
-
 class ChatActivity : AppCompatActivity() {
     private val webSocket = ResolverFactory.instance.getImplResolver()
 

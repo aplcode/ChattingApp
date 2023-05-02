@@ -25,7 +25,10 @@ data class LoginCache(
         data class LocationInformation(
             val zonedDateTime: ZonedDateTime,
         )
+    }
 
-        override fun toString() = """{ "applicationInformation": { "username":"${applicationInformation.username}", "sessionId":"${applicationInformation.sessionId}", "applicationVersion":"${applicationInformation.applicationVersion}" }, "deviceInformation": { "brand":"${deviceInformation.brand}", "model":"${deviceInformation.model}", "deviceId":"${deviceInformation.deviceId}" }, "location": { "zonedDateTime":"${location.zonedDateTime}" } }""".trimIndent()
+    companion object {
+        const val FILE_PATH = "/login/"
+        const val FILE_NAME = "loginCache"
     }
 }

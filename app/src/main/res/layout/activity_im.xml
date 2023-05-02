@@ -7,45 +7,123 @@
         android:layout_height="match_parent"
         tools:context=".activity.ImActivity">
 
-    <Button
-            android:id="@+id/activityDialog_btnStartNewDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="13dp"
-            android:textStyle="bold|italic"
-            android:textAllCaps="false"
-            android:text="@string/startNewDialogButton"
-            android:fontFamily="sans-serif-thin"
-            android:textSize="20sp"
+    <TextView
+            android:id="@+id/imImage"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/im_background_image"
+            android:clickable="true"
+            android:text="@string/im_button_example"
+            android:fontFamily="serif"
+            android:textSize="50sp"
+            android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
             app:layout_constraintHorizontal_bias="0.5"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/activityDialog_userRecyclerView"
+    <TextView
+            android:id="@+id/usernameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/username_example"
+            android:fontFamily="serif"
+            android:textColor="#000000"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:textAllCaps="false"
             app:layout_constraintBaseline_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="parent"
-            tools:listitem="@layout/user_layout"
-            app:layout_constraintTop_toBottomOf="@+id/activityDialog_btnStartNewDialog"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imImage"/>
 
-    <Button
-            android:id="@+id/imButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/im_background_image"
-            android:layout_marginEnd="30dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttonGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:background="@drawable/im_button_background_image"
+            app:layout_constraintTop_toBottomOf="@+id/usernameText">
+        <TextView
+                android:id="@+id/changePasswordButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/change_password_text"
+                android:textColor="#2B2B2B"
+                android:textAllCaps="false"
+                android:layout_margin="0dp"
+                android:layout_marginBottom="5dp"
+                android:padding="0dp"
+                android:textFontWeight="1"
+                android:textSize="25sp"
+                android:paddingStart="10sp"
+                android:paddingEnd="10sp"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+                android:id="@+id/clearCacheButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/clear_cache_text"
+                android:textColor="#2B2B2B"
+                android:textAllCaps="false"
+                android:layout_marginBottom="5dp"
+                android:padding="0dp"
+                android:textFontWeight="1"
+                android:textSize="25sp"
+                android:paddingStart="10sp"
+                android:paddingEnd="10sp"
+                app:layout_constraintTop_toBottomOf="@+id/changePasswordButton"/>
+
+        <TextView
+                android:id="@+id/logOutButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/log_out_text"
+                android:textColor="#2B2B2B"
+                android:textAllCaps="false"
+                android:layout_marginBottom="5dp"
+                android:padding="0dp"
+                android:textFontWeight="1"
+                android:textSize="25sp"
+                android:paddingStart="10sp"
+                android:paddingEnd="10sp"
+                app:layout_constraintTop_toBottomOf="@+id/clearCacheButton"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+            android:id="@+id/lastLoginsTitle"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:clickable="true"
-            android:text="@string/im_button_example"
-            android:fontFamily="serif"
-            android:textSize="21sp"
-            app:layout_constraintEnd_toStartOf="@+id/activityDialog_btnStartNewDialog"
-            app:layout_constraintBottom_toTopOf="@+id/activityDialog_userRecyclerView"/>
+            android:text="@string/login_history_text"
+            android:textSize="28sp"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/buttonGroup"
+            android:layout_marginTop="15dp"/>
+
+        <FrameLayout
+                android:id="@+id/loginHistoryGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:background="@drawable/im_button_background_image"
+                app:layout_constraintTop_toBottomOf="@+id/lastLoginsTitle">
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lastLoginsList"
+            android:layout_width="match_parent"
+            android:layout_height="370dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            tools:listitem="@layout/last_login_layout"/>
+        </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
